@@ -231,11 +231,25 @@ DOWNLOAD_LINKS = [
         ),
     },
     {
-        "label": "Hojas Topograficas Georreferenciadas",
+        # NOTE: this label must match the frontend row's .label text in
+        # frontend/src/index.html exactly (js/modules/downloads.js matches
+        # rows by exact label text to refresh their href) - it previously
+        # read "Hojas Topograficas..." (missing the accent the frontend
+        # has), which meant this row's href never actually got populated
+        # and stayed on its disabled "#" placeholder for every user.
+        "label": "Hojas Topográficas Georreferenciadas",
         "description": "Cartografia topografica de referencia del territorio nacional",
         "url": os.environ.get(
             "DOWNLOAD_URL_HOJAS",
             "https://www.dropbox.com/scl/fo/tp81vu4iorp2prnycxv5k/ALyiKBqXZLE3xPu4_2aSwuU?rlkey=79m91l9jaxurpo5wrvrdguw5w&dl=0",
+        ),
+    },
+    {
+        "label": "Aplicación CORSDist",
+        "description": "Aplicacion movil CORSDist para acceso a la red desde el campo",
+        "url": os.environ.get(
+            "DOWNLOAD_URL_CORSDIST",
+            "https://play.google.com/store/apps/details?id=com.carela.hairo.corsdist",
         ),
     },
 ]
