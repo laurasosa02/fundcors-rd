@@ -21,3 +21,17 @@ export const API_BASE_URL = isLocalHost
 // Django's default CSRF cookie/header names.
 export const CSRF_COOKIE_NAME = 'csrftoken';
 export const CSRF_HEADER_NAME = 'X-CSRFToken';
+
+// reCAPTCHA v2 site key. Site keys are meant to be public (they're always
+// visible in the page source of any site using reCAPTCHA) — only the
+// matching secret key must stay server-side (see the backend's
+// RECAPTCHA_SECRET_KEY setting).
+//
+// This is Google's published TEST site key, which always passes
+// verification and is explicitly documented as "use only for testing,
+// never in production" (https://developers.google.com/recaptcha/docs/faq).
+// Swap this for the real site key issued at
+// https://www.google.com/recaptcha/admin for the real production domain
+// before deploying — until then, registration has zero real bot
+// protection even though the checkbox appears to work.
+export const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';

@@ -33,3 +33,11 @@ django-ratelimit==4.1.0
 # Serves static files directly from the Django app in production
 # (no separate static file server/CDN required).
 whitenoise==6.12.0
+
+# Provides a known-good CA certificate bundle for the outbound HTTPS call
+# to Google's reCAPTCHA siteverify endpoint (accounts/views.py). Some
+# Python installs (notably python.org's macOS builds, possibly some
+# shared-hosting Python environments too) don't ship a working system CA
+# bundle out of the box, which would otherwise make every registration
+# fail with an SSL certificate verification error.
+certifi==2026.7.22

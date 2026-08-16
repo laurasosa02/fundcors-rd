@@ -16,6 +16,20 @@
 .fcrd2-field input,.fcrd2-field select{font-family:var(--font-body);font-size:14.5px;color:var(--carbon);border:none;border-bottom:1px solid var(--silver);border-radius:0;padding:10px 2px;background:var(--white);transition:border-color 150ms var(--ease);width:100%;}
 .fcrd2-field input:focus,.fcrd2-field select:focus{outline:none;border-color:var(--green);}
 
+.fcrd2-field-hint{font-family:var(--font-body);font-size:12.5px;color:var(--carbon-soft);}
+
+.fcrd2-recaptcha{min-height:78px;}
+
+/* The reCAPTCHA widget itself is a fixed 304px wide. .fcrd2-section keeps
+   a constant 40px horizontal padding at every width by design (see
+   header-nav.css), so a 320px-wide phone only has ~240px of content
+   width available — narrower than the widget. Scaling it down (Google's
+   own documented approach for constrained containers) keeps it inside
+   the form instead of overflowing/forcing horizontal scroll. */
+@media (max-width:420px){
+  .fcrd2-recaptcha{min-height:60px;transform:scale(0.78);transform-origin:left top;}
+}
+
 .fcrd2-form-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
 
 .fcrd2-form-msg{font-family:var(--font-body);font-size:13.5px;color:var(--carbon-soft);min-height:1em;}

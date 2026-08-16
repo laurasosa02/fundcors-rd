@@ -14,6 +14,7 @@ class FundcorsrdUserAdmin(UserAdmin):
         "cedula",
         "telefono",
         "status",
+        "is_email_verified",
         "is_staff",
     )
     list_filter = ("status", "is_staff", "is_superuser")
@@ -21,7 +22,10 @@ class FundcorsrdUserAdmin(UserAdmin):
     ordering = ("email",)
 
     fieldsets = UserAdmin.fieldsets + (
-        ("FUNDCORSRD", {"fields": ("cedula", "telefono", "status")}),
+        (
+            "FUNDCORSRD",
+            {"fields": ("cedula", "telefono", "status", "email_verified_at")},
+        ),
     )
 
     actions = ["approve_users", "reject_users"]
@@ -29,6 +33,10 @@ class FundcorsrdUserAdmin(UserAdmin):
     @admin.display(description="Nombre completo")
     def get_full_name(self, obj):
         return obj.get_full_name()
+
+    @admin.display(description="Correo verificado", boolean=True)
+    def is_email_verified(self, obj):
+        return obj.email_verified_at is not None
 
     @admin.action(description="Aprobar usuarios seleccionados")
     def approve_users(self, request, queryset):

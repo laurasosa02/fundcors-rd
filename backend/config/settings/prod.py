@@ -50,3 +50,17 @@ FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN")
 
 CORS_ALLOWED_ORIGINS = [FRONTEND_ORIGIN]
 CORS_ALLOW_CREDENTIALS = True
+
+# Required in addition to CORS_ALLOWED_ORIGINS above (that setting only
+# controls whether the browser is allowed to read the response; this one
+# controls whether Django's CSRF middleware accepts the request at all -
+# see the matching comment in dev.py for why both are needed).
+CSRF_TRUSTED_ORIGINS = [FRONTEND_ORIGIN]
+
+# Real reCAPTCHA v2 secret key, requested at
+# https://www.google.com/recaptcha/admin for the real production domain.
+# No test-key fallback here (unlike dev.py) — if this is left unset,
+# registration fails closed (see accounts/views.py::_verify_recaptcha),
+# which is safer than silently accepting Google's public test key (which
+# always passes and therefore provides zero bot protection) in production.
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")

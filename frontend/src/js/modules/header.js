@@ -4,6 +4,12 @@
 
 const HEADER_HIDE_THRESHOLD = 84; // approx header height in px
 const SCROLLED_THRESHOLD = 8;
+// Minimum net scroll distance (px) since the last state change before the
+// header's hide/show state is allowed to flip. Without this, momentum/
+// inertial scrolling (trackpads especially) produces tiny, noisy
+// frame-to-frame direction changes that make the header flicker
+// show/hide rapidly instead of staying stable.
+const SCROLL_DELTA_TOLERANCE = 6;
 const MOBILE_BREAKPOINT = 980;
 
 export function initHeader() {
@@ -16,27 +22,39 @@ export function initHeader() {
 }
 
 function initScrollBehavior(header) {
-  let lastScrollY = window.scrollY || 0;
+  // anchorY is the reference point a scroll gesture is measured from. It
+  // only moves once we've confirmed a real, deliberate scroll (net delta
+  // past the tolerance) — small back-and-forth jitter around a resting
+  // point never accumulates into a state change, which is what keeps the
+  // bar from flickering.
+  let anchorY = Math.max(window.scrollY || 0, 0);
   let ticking = false;
 
   const update = () => {
-    const currentScrollY = window.scrollY || 0;
+    const currentY = Math.max(window.scrollY || 0, 0);
 
-    if (currentScrollY > SCROLLED_THRESHOLD) {
-      header.classList.add('fcrd2-scrolled');
-    } else {
-      header.classList.remove('fcrd2-scrolled');
-    }
+    header.classList.toggle('fcrd2-scrolled', currentY > SCROLLED_THRESHOLD);
 
-    const scrollingDown = currentScrollY > lastScrollY;
-
-    if (scrollingDown && currentScrollY > HEADER_HIDE_THRESHOLD) {
-      header.classList.add('fcrd2-hide');
-    } else if (!scrollingDown) {
+    if (currentY <= HEADER_HIDE_THRESHOLD) {
+      // Always show the header near the very top of the page, regardless
+      // of scroll direction.
       header.classList.remove('fcrd2-hide');
+      anchorY = currentY;
+    } else {
+      const delta = currentY - anchorY;
+      if (delta > SCROLL_DELTA_TOLERANCE) {
+        header.classList.add('fcrd2-hide');
+        anchorY = currentY;
+      } else if (delta < -SCROLL_DELTA_TOLERANCE) {
+        header.classList.remove('fcrd2-hide');
+        anchorY = currentY;
+      }
+      // else: net movement since the anchor is still within tolerance —
+      // treat it as scroll noise and leave both the visibility state and
+      // the anchor alone, so a slow/deliberate scroll keeps accumulating
+      // toward the threshold instead of being reset every frame.
     }
 
-    lastScrollY = currentScrollY;
     ticking = false;
   };
 

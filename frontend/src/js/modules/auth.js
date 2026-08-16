@@ -7,12 +7,39 @@
 
 import { apiFetch } from './api.js';
 import { renderDownloads } from './downloads.js';
+import { RECAPTCHA_SITE_KEY } from '../config.js';
 
 const REGISTER_SUCCESS_MSG =
-  'Tu solicitud fue recibida. Un administrador la revisará y te notificaremos por correo.';
+  'Revisa tu correo para verificar tu cuenta. Luego, un administrador revisará tu solicitud y te notificaremos cuando sea aprobada.';
 const PASSWORD_MISMATCH_MSG = 'Las contraseñas no coinciden.';
+const RECAPTCHA_REQUIRED_MSG = 'Por favor, completa la verificación de seguridad.';
 const LOGIN_INVALID_MSG = 'Credenciales inválidas.';
 const GENERIC_ERROR_MSG = 'Ocurrió un error. Intenta de nuevo.';
+
+// reCAPTCHA state. The widget renders explicitly (see the script tag and
+// the fcrd-recaptcha-ready event dispatched in index.html) rather than
+// automatically, because its container lives inside the "Registrarse"
+// tab panel, which starts hidden — auto-render into a display:none
+// container doesn't size correctly. Rendering is deferred until both the
+// API script has loaded AND the register tab has been opened at least
+// once, whichever happens last — recaptchaApiReady starts out true if
+// the script had *already* finished loading (and dispatched its event)
+// before this module got a chance to run and add the listener below.
+let recaptchaApiReady = typeof window.grecaptcha !== 'undefined';
+let recaptchaWidgetId = null;
+
+window.addEventListener('fcrd-recaptcha-ready', () => {
+  recaptchaApiReady = true;
+  tryRenderRecaptcha();
+});
+
+function tryRenderRecaptcha() {
+  if (!recaptchaApiReady || recaptchaWidgetId !== null) return;
+  const container = document.getElementById('fcrd2Recaptcha');
+  if (!container || typeof window.grecaptcha === 'undefined' || !window.grecaptcha.render) return;
+
+  recaptchaWidgetId = window.grecaptcha.render(container, { sitekey: RECAPTCHA_SITE_KEY });
+}
 
 /**
  * Boots the authentication UI: tab switching, the initial session check,
@@ -85,6 +112,8 @@ function switchTab(authCard, target) {
   authCard.querySelectorAll('.sub[data-tab-sub]').forEach((sub) => {
     sub.style.display = sub.dataset.tabSub === target ? '' : 'none';
   });
+
+  if (target === 'register') tryRenderRecaptcha();
 }
 
 /**
@@ -131,6 +160,16 @@ async function handleRegister(event, form) {
     return;
   }
 
+  const recaptchaToken =
+    recaptchaWidgetId !== null && window.grecaptcha
+      ? window.grecaptcha.getResponse(recaptchaWidgetId)
+      : '';
+
+  if (!recaptchaToken) {
+    setMessage(msgEl, RECAPTCHA_REQUIRED_MSG);
+    return;
+  }
+
   const body = {
     nombre: fields.nombre.value,
     cedula: fields.cedula.value,
@@ -138,6 +177,7 @@ async function handleRegister(event, form) {
     email: fields.email.value,
     password,
     password_confirm: passwordConfirm,
+    recaptcha_token: recaptchaToken,
   };
 
   let result;
@@ -145,6 +185,7 @@ async function handleRegister(event, form) {
     result = await apiFetch('/auth/register/', { method: 'POST', body });
   } catch (err) {
     setMessage(msgEl, GENERIC_ERROR_MSG);
+    resetRecaptcha();
     return;
   }
 
@@ -153,8 +194,13 @@ async function handleRegister(event, form) {
   if (status === 201) {
     setMessage(msgEl, REGISTER_SUCCESS_MSG);
     form.reset();
+    resetRecaptcha();
     return;
   }
+
+  // reCAPTCHA tokens are single-use — any failed submission needs a fresh
+  // one before the user can retry, success or not.
+  resetRecaptcha();
 
   if (status === 400 && data && data.errors) {
     setMessage(msgEl, firstErrorMessage(data.errors));
@@ -162,6 +208,12 @@ async function handleRegister(event, form) {
   }
 
   setMessage(msgEl, GENERIC_ERROR_MSG);
+}
+
+function resetRecaptcha() {
+  if (recaptchaWidgetId !== null && window.grecaptcha) {
+    window.grecaptcha.reset(recaptchaWidgetId);
+  }
 }
 
 /**

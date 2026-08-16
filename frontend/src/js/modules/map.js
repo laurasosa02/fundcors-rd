@@ -141,6 +141,11 @@ async function bootstrapMap(mapEl, dotEl, statusEl) {
   // the last known good draw".
   let hasStations = false;
 
+  // The ISO 8601 timestamp of the last successful fetch, kept even across
+  // a later failed refetch so the status line can keep telling the user
+  // exactly how old the data currently on screen is.
+  let lastUpdatedAt = null;
+
   const draw = () => fetchAndDrawStations();
 
   /**
@@ -177,6 +182,8 @@ async function bootstrapMap(mapEl, dotEl, statusEl) {
       const name = station.name || '';
       const location = station.location || '';
 
+      const coordsLabel = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
       window.L.circleMarker([lat, lon], {
         radius: 7,
         color: '#ffffff',
@@ -184,7 +191,10 @@ async function bootstrapMap(mapEl, dotEl, statusEl) {
         fillColor: COLOR_FRESH,
         fillOpacity: 0.9,
       })
-        .bindPopup(`<strong>${escapeHtml(name)}</strong><br>${escapeHtml(location)}`)
+        .bindPopup(
+          `<strong>${escapeHtml(name)}</strong><br>${escapeHtml(location)}` +
+            `<br><span style="font-family:'JetBrains Mono',monospace;font-size:12px;">${escapeHtml(coordsLabel)}</span>`,
+        )
         .addTo(stationLayer);
 
       window.L.circle([lat, lon], {
@@ -197,12 +207,13 @@ async function bootstrapMap(mapEl, dotEl, statusEl) {
 
     const count = stations.length;
     hasStations = count > 0;
+    if (data.updated_at) lastUpdatedAt = data.updated_at;
 
     const stale = Boolean(data.stale);
     const color = stale ? COLOR_STALE : COLOR_FRESH;
     const label = stale
-      ? `Datos desactualizados - N de estaciones: ${count}`
-      : `Estacion activa - N de estaciones: ${count}`;
+      ? `Datos desactualizados - N de estaciones: ${count}${updatedAtSuffix()}`
+      : `Estacion activa - N de estaciones: ${count}${updatedAtSuffix()}`;
 
     setStatus(dotEl, statusEl, color, label);
   }
@@ -216,10 +227,31 @@ async function bootstrapMap(mapEl, dotEl, statusEl) {
     if (hasStations) {
       // Leave the dot's color as-is: it still reflects the last known
       // fresh/stale state, which is more informative than graying it out.
-      setStatus(dotEl, statusEl, null, STATUS_STALE_FETCH);
+      setStatus(dotEl, statusEl, null, `${STATUS_STALE_FETCH}${updatedAtSuffix()}`);
     } else {
       setStatus(dotEl, statusEl, COLOR_UNKNOWN, STATUS_NO_DATA);
     }
+  }
+
+  /**
+   * Internal: formats lastUpdatedAt (an ISO 8601 string from the backend,
+   * or null if nothing has ever loaded successfully) as a short
+   * " · Última actualización: HH:MM:SS" suffix for the status line, so
+   * users always know exactly when the data currently on screen was
+   * actually collected from the NTRIP caster — not just whether it's
+   * "fresh" or "stale".
+   * @returns {string}
+   */
+  function updatedAtSuffix() {
+    if (!lastUpdatedAt) return '';
+    const date = new Date(lastUpdatedAt);
+    if (Number.isNaN(date.getTime())) return '';
+    const time = date.toLocaleTimeString('es-DO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    return ` · Última actualización: ${time}`;
   }
 
   await draw();
