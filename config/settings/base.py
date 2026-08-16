@@ -127,12 +127,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+    {
+        # Custom: requires at least one uppercase letter, one lowercase
+        # letter, and one digit. See accounts/password_validators.py.
+        "NAME": "accounts.password_validators.ComplexityValidator",
     },
 ]
 
@@ -176,6 +182,16 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# reCAPTCHA v2 ("I'm not a robot") — verified server-side against Google's
+# siteverify endpoint before a registration is accepted (see
+# accounts/views.py::_verify_recaptcha). Only the secret key is needed
+# here; the public site key lives in the frontend's config.js (site keys
+# are meant to be publicly visible in page source, only the secret must
+# stay server-side). No default here — dev.py and prod.py each set their
+# own appropriate value.
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
 
 
 # Email

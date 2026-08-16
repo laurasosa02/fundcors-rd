@@ -23,6 +23,10 @@ class User(AbstractUser):
         choices=Status.choices,
         default=Status.PENDING,
     )
+    # Set once the applicant clicks the link sent to their own email at
+    # registration time. Independent of (and required in addition to)
+    # admin approval - login checks both. Null means "not verified yet".
+    email_verified_at = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
