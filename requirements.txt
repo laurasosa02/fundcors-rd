@@ -1,0 +1,35 @@
+# FUNDCORSRD backend — Python dependencies.
+#
+# Target: Django 5.x on Python 3.11+.
+#
+# Django is pinned to the 5.2 LTS series on purpose, not the newer 6.x
+# line: Django 6.x requires Python >= 3.12, which is newer than this
+# project's Python 3.11+ floor. Django 5.2 is Django's long-term-support
+# release (security/bugfix support into 2028).
+#
+# All versions below were checked against the live PyPI index on
+# 2026-08-15 (each is the actual latest published release as of that
+# date, not a guess) — see the deployment report for details.
+Django==5.2.17
+
+# Argon2 password hashing backend for
+# django.contrib.auth.hashers.Argon2PasswordHasher (see PASSWORD_HASHERS
+# in config/settings/base.py).
+argon2-cffi==25.1.0
+
+# CORS handling for cross-origin requests from the separately-hosted
+# frontend (FRONTEND_ORIGIN).
+django-cors-headers==4.9.0
+
+# Content-Security-Policy header support.
+django-csp==4.0
+
+# Login attempt tracking / lockout (brute-force protection).
+django-axes==8.3.1
+
+# View-level rate limiting decorators.
+django-ratelimit==4.1.0
+
+# Serves static files directly from the Django app in production
+# (no separate static file server/CDN required).
+whitenoise==6.12.0
