@@ -1,0 +1,44 @@
+/*
+  FUNDCORSRD — Acceso: auth card (login/register tabs) + downloads list
+
+  .fcrd2-downloads-topbar is a small addition (not in the reference) that
+  lays out the "Sesión activa…" lead text next to the new Cerrar sesión
+  button required by this build's real-auth markup.
+
+  Note: the reference neutralizes `.fcrd2-download-row:hover{background:…}`
+  with an `!important` rule elsewhere in its own cascade, so that specific
+  tint-on-hover never actually renders — it is intentionally not
+  reproduced here. The row hover effect that IS visible (the "Descargar"
+  pill turning solid green) is kept, since nothing overrides it.
+*/
+
+.fcrd2-auth-card{background:var(--white);border:1px solid var(--silver-soft);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-sm);min-height:480px;display:flex;flex-direction:column;gap:16px;}
+.fcrd2-auth-card h3{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--carbon);border-top:2px solid var(--green);padding-top:12px;width:fit-content;}
+.fcrd2-auth-card p.sub{font-family:var(--font-body);font-size:14px;color:var(--carbon-soft);}
+
+.fcrd2-auth-tabbed{max-width:100%;margin:0 auto;width:100%;border:none;box-shadow:none;padding:0;background:none;}
+
+.fcrd2-auth-tabs{display:flex;gap:24px;background:none;border-radius:0;padding:0;margin-bottom:4px;border-bottom:1px solid var(--silver-soft);}
+.fcrd2-auth-tab{flex:1;background:none;border:none;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--carbon-soft);padding:10px 0;border-radius:0;border-bottom:2px solid transparent;transition:background 150ms var(--ease),color 150ms var(--ease);}
+.fcrd2-auth-tab.active{color:var(--green-dark);border-bottom-color:var(--green);}
+
+.fcrd2-downloads{display:flex;flex-direction:column;gap:20px;}
+.fcrd2-downloads-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+.fcrd2-download-list{display:flex;flex-direction:column;overflow:hidden;border:none;border-top:1px solid var(--silver-soft);border-radius:0;background:none;}
+.fcrd2-download-row{display:flex;align-items:center;gap:18px;padding:20px 22px;background:none;border-bottom:1px solid var(--silver-soft);border-radius:0;transition:background 150ms var(--ease);}
+.fcrd2-download-row:last-child{border-bottom:none;}
+.fcrd2-download-icon{flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;justify-content:center;}
+.fcrd2-download-icon svg{width:20px;height:20px;stroke:var(--green-dark);}
+.fcrd2-download-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.fcrd2-download-text .label{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--carbon);}
+.fcrd2-download-text .desc{font-family:var(--font-body);font-size:13.5px;color:var(--carbon-soft);line-height:1.5;}
+.fcrd2-download-action{flex-shrink:0;display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:600;font-size:13.5px;color:var(--green-dark);padding:9px 16px;border:1px solid var(--silver);border-radius:var(--radius-full);transition:border-color 150ms var(--ease),background 150ms var(--ease),color 150ms var(--ease);}
+.fcrd2-download-action svg{width:14px;height:14px;stroke:currentColor;transition:transform 150ms var(--ease);}
+.fcrd2-download-row:hover .fcrd2-download-action{background:var(--green);border-color:var(--green);color:var(--white);}
+.fcrd2-download-row:hover .fcrd2-download-action svg{transform:translateY(2px);}
+
+@media (max-width:980px){
+  .fcrd2-download-row{flex-wrap:wrap;}
+  .fcrd2-download-action{margin-left:62px;}
+}

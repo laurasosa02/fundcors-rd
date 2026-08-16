@@ -1,0 +1,15 @@
+/*
+  FUNDCORSRD — FAQ accordion (#faq)
+*/
+
+.fcrd2-faq{display:flex;flex-direction:column;max-width:820px;border-top:1px solid var(--silver-soft);}
+.fcrd2-faq-item{border-bottom:1px solid var(--silver-soft);}
+.fcrd2-faq-q{width:100%;background:none;border:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 4px;cursor:pointer;text-align:left;}
+.fcrd2-faq-q span.txt{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--carbon);}
+.fcrd2-faq-q svg{flex-shrink:0;transition:transform 180ms var(--ease);color:var(--green);}
+.fcrd2-faq-item.open .fcrd2-faq-q svg{transform:rotate(45deg);}
+.fcrd2-faq-a{max-height:0;overflow:hidden;transition:max-height 220ms var(--ease);}
+.fcrd2-faq-item.open .fcrd2-faq-a{max-height:400px;}
+.fcrd2-faq-a-inner{padding:0 4px 22px;font-family:var(--font-body);font-size:15px;line-height:1.75;color:var(--carbon-soft);max-width:700px;}
+.fcrd2-faq-a-inner strong{color:var(--carbon);font-weight:600;}
+.fcrd2-faq-a-inner .mono-price{font-family:var(--font-mono);font-weight:600;color:var(--green-dark);}

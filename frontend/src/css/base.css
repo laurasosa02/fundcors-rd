@@ -1,0 +1,46 @@
+/*
+  FUNDCORSRD — Base styles
+  Global reset, document defaults and the shared button system.
+  No scroll-behavior:smooth here — smooth scrolling with header-offset
+  compensation is handled by JS (see js/main.js).
+*/
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+/* The [hidden] attribute must always win over a component's own display
+   rule (e.g. display:flex on .fcrd2-downloads/.fcrd2-auth-card) — without
+   this, toggling the hidden property from JS has no visible effect. */
+[hidden]{display:none !important;}
+
+html{-webkit-text-size-adjust:100%;}
+
+body{
+  width:100%;
+  font-family:var(--font-body);
+  color:var(--carbon);
+  background:#ffffff;
+  background-image:radial-gradient(circle, rgba(17,96,53,0.07) 1px, transparent 1px);
+  background-size:26px 26px;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* ---------- Buttons ---------- */
+.fcrd2-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-display);font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:var(--radius-md);border:1px solid transparent;cursor:pointer;transition:background 150ms var(--ease),border-color 150ms var(--ease),color 150ms var(--ease);}
+.fcrd2-btn-primary{background:var(--green);color:var(--white);}
+.fcrd2-btn-primary:hover{background:var(--green-dark);}
+.fcrd2-btn-outline{background:var(--white);color:var(--green);border-color:var(--green);}
+.fcrd2-btn-outline:hover{background:var(--green-soft);}
+.fcrd2-btn-ghost{background:transparent;color:var(--carbon);border-color:var(--silver);}
+.fcrd2-btn-ghost:hover{background:var(--silver-faint);}
+.fcrd2-btn-wa{background:#1c7a3e;color:#fff;}
+.fcrd2-btn-wa:hover{background:#155f30;}
+
+/* Editorial theme: every button renders as a uniform outlined green/white
+   style regardless of its modifier class (this mirrors the reference's
+   `.fcrd2-d1 .fcrd2-btn{...!important}` override, which — because it
+   targets the shared `.fcrd2-btn` class with !important — wins over
+   -primary/-outline/-ghost/-wa and over any inline background-color
+   attempts on individual buttons in the markup). */
+.fcrd2-btn{background:var(--white) !important;color:var(--green) !important;border:1px solid var(--green) !important;}
+.fcrd2-btn:hover{background:var(--green-soft) !important;}

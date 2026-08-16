@@ -1,0 +1,28 @@
+/*
+  FUNDCORSRD — Forms (Inscripción form + login/register auth forms)
+
+  .fcrd2-form-msg is a small addition (not in the reference, which used a
+  WordPress/Ultimate Member shortcode here): a neutral, empty-by-default
+  status line for the real login/register forms; a later task is expected
+  to color/populate it from the backend auth response.
+*/
+
+.fcrd2-form-wrap{display:grid;grid-template-columns:1fr;gap:36px;align-items:start;}
+
+.fcrd2-form-card{background:none;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;gap:22px;}
+
+.fcrd2-field{display:flex;flex-direction:column;gap:6px;}
+.fcrd2-field label{font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--carbon);}
+.fcrd2-field input,.fcrd2-field select{font-family:var(--font-body);font-size:14.5px;color:var(--carbon);border:none;border-bottom:1px solid var(--silver);border-radius:0;padding:10px 2px;background:var(--white);transition:border-color 150ms var(--ease);width:100%;}
+.fcrd2-field input:focus,.fcrd2-field select:focus{outline:none;border-color:var(--green);}
+
+.fcrd2-form-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
+
+.fcrd2-form-msg{font-family:var(--font-body);font-size:13.5px;color:var(--carbon-soft);min-height:1em;}
+
+.fcrd2-info-card{background:none;border:none;border-left:2px solid var(--green);border-radius:0;padding:4px 0 4px 22px;display:flex;flex-direction:column;gap:14px;}
+.fcrd2-info-card h4{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--carbon);}
+.fcrd2-info-card p{font-family:var(--font-body);font-size:14.5px;color:var(--carbon-soft);line-height:1.7;}
+.fcrd2-info-card ul{display:flex;flex-direction:column;gap:8px;padding-left:0;}
+.fcrd2-info-card li{list-style:none;font-family:var(--font-body);font-size:14.5px;color:var(--carbon);line-height:1.6;position:relative;padding-left:16px;text-align:left;}
+.fcrd2-info-card li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--green);}

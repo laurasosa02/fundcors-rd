@@ -1,0 +1,34 @@
+/*
+  FUNDCORSRD — Design tokens
+  Source of truth for color, type, radius, shadow and easing values used
+  across the site. Values copied verbatim from the D1 editorial reference.
+*/
+:root{
+  --green:#116035;
+  --green-dark:#0d4a29;
+  --green-soft:#eaf3ee;
+  --green-soft-2:#f4f9f6;
+
+  --carbon:#12291d;
+  --carbon-soft:#3f5c4c;
+
+  --silver:#d1d5db;
+  --silver-soft:#eef0f2;
+  --silver-faint:#f7f8f9;
+
+  --white:#ffffff;
+
+  --font-display: Inter, sans-serif;
+  --font-body: Roboto, sans-serif;
+  --font-mono: JetBrains Mono, monospace;
+
+  --radius-sm:4px;
+  --radius-md:6px;
+  --radius-lg:10px;
+  --radius-full:999px;
+
+  --shadow-sm:0 1px 2px rgba(43,43,43,0.05);
+  --shadow-md:0 6px 20px rgba(43,43,43,0.06);
+
+  --ease:cubic-bezier(0.2,0.6,0.2,1);
+}

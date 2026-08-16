@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FUNDCORSRD - Red de Estaciones CORS de Republica Dominicana</title>
+<meta name="description" content="FUNDCORSRD opera la red nacional de estaciones GNSS/CORS de la República Dominicana: correcciones en tiempo real vía NTRIP, datos RINEX de alta precisión y soporte geodésico para profesionales e instituciones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<header class="fcrd2-header" id="fcrd2Header">
+  <div class="fcrd2-logo"><img src="assets/logo-fundcorsrd.png" alt="FUNDCORSRD" class="fcrd2-logo-img" width="280" height="176"></div>
+  <button class="fcrd2-mobile-toggle" id="fcrd2MobileToggle" aria-label="Abrir menú" type="button">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="fcrd2-nav" id="fcrd2Nav">
+    <a class="fcrd2-link" href="#inicio">Inicio</a>
+    <div class="fcrd2-dd" id="fcrd2Dd">
+      <button class="fcrd2-dd-btn" id="fcrd2DdBtn" type="button">Nosotros
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--carbon)" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+      <div class="fcrd2-dd-menu">
+        <a href="#quienes-somos">Quiénes Somos</a>
+        <a href="#inscripcion">Inscripción</a>
+        <a href="#faq">Preguntas Frecuentes</a>
+        <a href="#contactos">Contactos</a>
+      </div>
+    </div>
+    <a class="fcrd2-link" href="#estado-actual">Estado Actual</a>
+    <a class="fcrd2-link" href="#acceso"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--carbon-soft)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Descargas</a>
+  </nav>
+</header>
+<div class="fcrd2-menu-overlay" id="fcrd2MenuOverlay">
+  <button class="fcrd2-menu-close" id="fcrd2MenuClose" aria-label="Cerrar menú" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+  <a href="#inicio">Inicio</a>
+  <a href="#quienes-somos">Quiénes Somos</a>
+  <a href="#inscripcion">Inscripción</a>
+  <a href="#faq">Preguntas Frecuentes</a>
+  <a href="#estado-actual">Estado Actual</a>
+  <a href="#contactos">Contactos</a>
+  <div class="fcrd2-menu-dl">
+    <a href="#acceso" class="fcrd2-menu-dl-single"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Descargas</a>
+  </div>
+</div>
+
+<section id="inicio" class="fcrd2-hero">
+  <span class="fcrd2-pill" style="position:relative;z-index:1;"><span class="dot"></span>Red GNSS activa</span>
+  <h1 style="color:#0f5230;">Infraestructura geodésica de alta precisión para la República Dominicana</h1>
+  <p>FUNDCORSRD desarrolla, opera y mantiene una infraestructura nacional de estaciones CORS que proporciona correcciones GNSS en tiempo real mediante el protocolo NTRIP, observaciones RINEX de alta precisión para profesionales, instituciones públicas y privadas, así como soporte a proyectos en toda la República Dominicana.</p>
+  <div class="fcrd2-hero-ctas">
+    <a class="fcrd2-btn" href="#inscripcion">Inscripción</a>
+    <a class="fcrd2-btn" href="#estado-actual">Ver Estado de la Red</a>
+    <a class="fcrd2-btn" href="#acceso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Descargas</a>
+  </div>
+  <div class="fcrd2-stats">
+    <div><div class="fcrd2-stat-num">±3mm</div><div class="fcrd2-stat-label">Precisión geodésica</div></div>
+    <div><div class="fcrd2-stat-num">39</div><div class="fcrd2-stat-label">CORS disponibles (30 Fundcorsrd + 9 JI)</div></div>
+    <div><div class="fcrd2-stat-num">2</div><div class="fcrd2-stat-label">Equipos simultáneos por usuario</div></div>
+    <div><div class="fcrd2-stat-num">24/7</div><div class="fcrd2-stat-label">Transmisión continua</div></div>
+  </div>
+</section>
+
+<section id="quienes-somos" class="fcrd2-section">
+  <div class="fcrd2-bg-dot" aria-hidden="true" style="width:260px;height:260px;top:50%;right:-40px;transform:translateY(-50%);-webkit-mask-image:linear-gradient(to left, black 45%, transparent 92%);mask-image:linear-gradient(to left, black 45%, transparent 92%);"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
+  <div>
+    <span class="fcrd2-eyebrow">Quiénes somos</span>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Fundación para el Establecimiento de la Red de Estaciones Permanentes de la República Dominicana</h2>
+    <p class="fcrd2-lead">FUNDCORSRD es una organización sin fines de lucro, integrada por agrimensores y profesionales de áreas afines de la República Dominicana, dedicada al establecimiento, operación y mantenimiento de una red de estaciones CORS a nivel nacional, contribuyendo al fortalecimiento de la infraestructura geodésica y al acceso a servicios de posicionamiento y georreferenciación de alta precisión en todo el país.</p>
+  </div>
+  <div class="fcrd2-grid-2">
+    <div>
+      <h3 style="color:#0f5230;">Misión</h3>
+      <p>Establecer, operar y mantener la Red de Estaciones CORS en la República Dominicana, garantizando el acceso continuo a datos geodésicos de precisión para agrimensores, instituciones públicas y privadas y la comunidad científica nacional.</p>
+    </div>
+    <div>
+      <h3 style="color:#0f5230;">Visión</h3>
+      <p>Consolidarse como la infraestructura geodésica de referencia del país, integrando tecnología GNSS de vanguardia al servicio del desarrollo territorial, catastral y de la investigación aplicada.</p>
+    </div>
+  </div>
+  <div class="fcrd2-contact-grid fcrd2-quienes-contact">
+    <div class="fcrd2-contact-card">
+      <span class="fcrd2-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+      <span class="label" style="color:#0f5230;">Dirección</span>
+      <span class="value">Calle E 8, Santo Domingo, D.N.</span>
+      <a class="value" href="https://maps.app.goo.gl/iwAJiMeMtxx2GqcY8" target="_blank" rel="noopener noreferrer">Ver en Google Maps →</a>
+    </div>
+    <div class="fcrd2-contact-card">
+      <span class="fcrd2-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"></path></svg></span>
+      <span class="label" style="color:#0f5230;">Teléfonos</span>
+      <a class="value mono" href="tel:+18098232845">+1 (809) 823-2845</a>
+      <a class="value mono" href="tel:+18292504307">+1 (829) 250-4307</a>
+    </div>
+    <div class="fcrd2-contact-card">
+      <span class="fcrd2-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 9.5 6L21 7"></path></svg></span>
+      <span class="label" style="color:#0f5230;">Correo / Instagram</span>
+      <a class="value" href="mailto:fundcorsrd@gmail.com">fundcorsrd@gmail.com</a>
+      <a class="value" href="https://instagram.com/fundcorsrd" target="_blank" rel="noopener noreferrer">@fundcorsrd</a>
+    </div>
+    <div class="fcrd2-contact-card">
+      <span class="fcrd2-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"></path></svg></span>
+      <span class="label" style="color:#0f5230;">Inscripciones y datos bancarios</span>
+      <span class="value">Solicítelos vía WhatsApp</span>
+      <a class="fcrd2-btn fcrd2-btn-wa" href="https://wa.me/18292504307" target="_blank" rel="noopener noreferrer" style="width:fit-content;margin-top:4px;color:#ffffff;background-color:#2c9c5e;">WhatsApp</a>
+    </div>
+  </div>
+  <a href="#inicio" class="fcrd2-section-top" aria-label="Subir a Inicio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></a>
+</section>
+
+<section id="inscripcion" class="fcrd2-section alt">
+  <div class="fcrd2-bg-dot br" aria-hidden="true" style="bottom:70px;right:-50px;"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
+  <div>
+    <span class="fcrd2-eyebrow">Membresía</span>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Hacerse Usuario de la Red</h2>
+    <p class="fcrd2-lead">Complete sus datos para iniciar el proceso de inscripción. Este formulario es independiente del acceso RINEX — la confirmación y los datos bancarios se coordinan directamente por WhatsApp.</p>
+  </div>
+  <div class="fcrd2-form-wrap">
+    <form class="fcrd2-form-card" id="fcrd2InscripcionForm">
+      <div class="fcrd2-field">
+        <label for="fcrd2Nombre">Nombre y Apellido</label>
+        <input id="fcrd2Nombre" name="nombre" type="text" placeholder="Ej. Juan Pérez" required>
+      </div>
+      <div class="fcrd2-field">
+        <label for="fcrd2Cedula">Cédula</label>
+        <input id="fcrd2Cedula" name="cedula" type="text" placeholder="000-0000000-0" required>
+      </div>
+      <div class="fcrd2-field">
+        <label for="fcrd2Telefono">Teléfono</label>
+        <input id="fcrd2Telefono" name="telefono" type="tel" placeholder="(809) 000-0000" required>
+      </div>
+      <div class="fcrd2-field">
+        <label for="fcrd2Correo">Correo</label>
+        <input id="fcrd2Correo" name="correo" type="email" placeholder="correo@ejemplo.com" required>
+      </div>
+      <div class="fcrd2-form-actions">
+        <button type="submit" class="fcrd2-btn fcrd2-btn-primary" style="background-color:#2c9c5e;">Enviar Solicitud</button>
+        <a class="fcrd2-btn fcrd2-btn-wa" id="fcrd2WaSend" href="https://wa.me/18292504307" target="_blank" rel="noopener noreferrer" style="background-color:#2c9c5e;color:#ffffff;">Continuar por WhatsApp</a>
+      </div>
+    </form>
+    <div class="fcrd2-info-card" style="background-color:var(--white);">
+      <h4>Condiciones de la membresía</h4>
+      <ul style="text-align:left;">
+        <li style="text-align:left;">Contribución de inscripción: <span class="mono-price">US$500.00</span> (pagaderos en DOP a la tasa del día).</li>
+        <li style="text-align:left;">Acceso a <strong>39 CORS</strong> — 30 de Fundcorsrd y 9 de la Jurisdicción Inmobiliaria.</li>
+        <li style="text-align:left;">Uso simultáneo para <strong>2 equipos</strong> por usuario.</li>
+        <li style="text-align:left;">Aporte mensual de mantenimiento: <span class="mono-price">RD$1,000.00</span>.</li>
+      </ul>
+    </div>
+  </div>
+  <a href="#inicio" class="fcrd2-section-top" aria-label="Subir a Inicio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></a>
+</section>
+
+<section id="faq" class="fcrd2-section" style="position:relative;">
+  <div class="fcrd2-bg-dot bl" aria-hidden="true" style="left:-70px;bottom:40px;"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
+  <div>
+    <span class="fcrd2-eyebrow">Preguntas Frecuentes</span>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Normativa de membresía y pagos</h2>
+  </div>
+  <div class="fcrd2-faq" id="fcrd2Faq">
+    <div class="fcrd2-faq-item open">
+      <button class="fcrd2-faq-q" type="button">
+        <span class="txt">¿Cómo se forma parte del servicio de la red y cómo funciona la membresía?</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <div class="fcrd2-faq-a"><div class="fcrd2-faq-a-inner">Para formar parte de la red, se realiza una contribución de inscripción de <strong class="mono-price">US$500.00</strong> (pagaderos en DOP a la tasa del día), fondos destinados directamente al mantenimiento continuo de la infraestructura de la red. Esto otorga un usuario para conectarse a <strong>39 CORS</strong> (30 pertenecientes a Fundcorsrd y 9 de la Jurisdicción Inmobiliaria) con acceso simultáneo para <strong>2 equipos</strong>.</div></div>
+    </div>
+    <div class="fcrd2-faq-item">
+      <button class="fcrd2-faq-q" type="button">
+        <span class="txt">¿Cuál es el costo de mantenimiento?</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <div class="fcrd2-faq-a"><div class="fcrd2-faq-a-inner">El costo de mantenimiento continuo es de <strong class="mono-price">RD$1,000.00</strong> pesos mensuales.</div></div>
+    </div>
+    <div class="fcrd2-faq-item">
+      <button class="fcrd2-faq-q" type="button">
+        <span class="txt">¿Cómo realizar los pagos?</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <div class="fcrd2-faq-a"><div class="fcrd2-faq-a-inner">Los pagos se realizan mediante transferencia bancaria. Para obtener los datos de las cuentas autorizadas, por favor solicitar los datos directamente a través de nuestro <a href="https://wa.me/18292504307" target="_blank" rel="noopener noreferrer" style="color:var(--green);font-weight:600;">WhatsApp</a> de contacto.</div></div>
+    </div>
+  </div>
+  <a href="#inicio" class="fcrd2-section-top" aria-label="Subir a Inicio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></a>
+</section>
+
+<section id="estado-actual" class="fcrd2-section alt">
+  <div class="fcrd2-bg-dot tr" aria-hidden="true"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
+  <div>
+    <span class="fcrd2-eyebrow"><span id="fcrd2MapDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;"></span>Estado de la red</span>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Mapa de Estaciones CORS en Tiempo Real</h2>
+    <p class="fcrd2-lead">Consulte además las fuentes oficiales de monitoreo en vivo de la red.</p>
+  </div>
+  <div class="fcrd2-map-links">
+    <a class="fcrd2-btn fcrd2-btn-outline" href="https://monitor.use-snip.com/?hostUrl=190.166.228.161&port=2103" target="_blank" rel="noopener noreferrer">Monitor SNIP</a>
+  </div>
+  <div class="fcrd2-map-legend">
+    <div class="items">
+      <span class="item"><span style="width:9px;height:9px;border-radius:50%;background:#16a34a;display:inline-block;"></span>Estación activa</span>
+      <span class="item"><span style="width:9px;height:9px;border-radius:50%;border:2px solid #dc2626;display:inline-block;"></span>Radio de cobertura (30 km)</span>
+    </div>
+    <span id="fcrd2MapStatus" class="fcrd2-map-source">Consultando caster NTRIP…</span>
+  </div>
+  <div id="fcrd2-map"></div>
+  <span class="fcrd2-map-source">Fuente: NTRIP Sourcetable — 190.166.228.161:2103</span>
+  <a href="#inicio" class="fcrd2-section-top" aria-label="Subir a Inicio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></a>
+</section>
+
+<section id="acceso" class="fcrd2-section">
+  <div class="fcrd2-bg-dot bl" aria-hidden="true" style="width:110px;height:110px;bottom:40px;left:-16px;"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
+  <div>
+    <span class="fcrd2-eyebrow">Acceso</span>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Consola RINEX y Descargas Autorizadas</h2>
+  </div>
+
+  <div class="fcrd2-auth-card fcrd2-auth-tabbed" id="fcrd2AuthCard">
+    <div class="fcrd2-auth-tabs">
+      <button type="button" class="fcrd2-auth-tab active" data-tab="login">Iniciar Sesión</button>
+      <button type="button" class="fcrd2-auth-tab" data-tab="register">Registrarse</button>
+    </div>
+    <p class="sub" data-tab-sub="login">Ingrese sus credenciales para acceder a su cuenta.</p>
+    <p class="sub" data-tab-sub="register" style="display:none;">Complete el formulario para solicitar su registro.</p>
+    <div class="fcrd2-auth-panel" data-tab-panel="login">
+      <form class="fcrd2-form-card" id="fcrd2LoginForm">
+        <div class="fcrd2-field">
+          <label for="fcrd2LoginEmail">Correo</label>
+          <input id="fcrd2LoginEmail" name="email" type="email" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2LoginPassword">Contraseña</label>
+          <input id="fcrd2LoginPassword" name="password" type="password" placeholder="••••••••" required>
+        </div>
+        <div class="fcrd2-form-actions">
+          <button type="submit" class="fcrd2-btn fcrd2-btn-primary">Iniciar Sesión</button>
+        </div>
+        <p class="fcrd2-form-msg" id="fcrd2LoginMsg" role="alert"></p>
+      </form>
+    </div>
+    <div class="fcrd2-auth-panel" data-tab-panel="register" style="display:none;">
+      <form class="fcrd2-form-card" id="fcrd2RegisterForm">
+        <div class="fcrd2-field">
+          <label for="fcrd2RegNombre">Nombre y Apellido</label>
+          <input id="fcrd2RegNombre" name="nombre" type="text" placeholder="Ej. Juan Pérez" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2RegCedula">Cédula</label>
+          <input id="fcrd2RegCedula" name="cedula" type="text" placeholder="000-0000000-0" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2RegTelefono">Teléfono</label>
+          <input id="fcrd2RegTelefono" name="telefono" type="tel" placeholder="(809) 000-0000" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2RegEmail">Correo</label>
+          <input id="fcrd2RegEmail" name="email" type="email" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2RegPassword">Contraseña</label>
+          <input id="fcrd2RegPassword" name="password" type="password" minlength="10" required>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2RegPasswordConfirm">Confirmar contraseña</label>
+          <input id="fcrd2RegPasswordConfirm" name="password_confirm" type="password" minlength="10" required>
+        </div>
+        <div class="fcrd2-form-actions">
+          <button type="submit" class="fcrd2-btn fcrd2-btn-primary">Solicitar Registro</button>
+        </div>
+        <p class="fcrd2-form-msg" id="fcrd2RegisterMsg" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="fcrd2-downloads" id="fcrd2Downloads" hidden>
+    <div class="fcrd2-downloads-topbar">
+      <p class="fcrd2-lead">Sesión activa. Seleccione el recurso que desea descargar.</p>
+      <button type="button" class="fcrd2-btn fcrd2-btn-ghost" id="fcrd2LogoutBtn">Cerrar sesión</button>
+    </div>
+    <div class="fcrd2-download-list">
+      <div class="fcrd2-download-row">
+        <span class="fcrd2-download-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"></path><path d="M4 9h16M9 21V9"></path></svg></span>
+        <span class="fcrd2-download-text"><span class="label">Datos RINEX</span><span class="desc">Directorio de observables RINEX del servidor institucional.</span></span>
+        <a class="fcrd2-download-action" href="#" aria-disabled="true" data-pending-url="true" rel="noopener noreferrer">Descargar<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></a>
+      </div>
+      <div class="fcrd2-download-row">
+        <span class="fcrd2-download-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"></path></svg></span>
+        <span class="fcrd2-download-text"><span class="label">Mapa Manzanero DN</span><span class="desc">Cartografía catastral del Distrito Nacional.</span></span>
+        <a class="fcrd2-download-action" href="#" aria-disabled="true" data-pending-url="true" rel="noopener noreferrer">Descargar<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></a>
+      </div>
+      <div class="fcrd2-download-row">
+        <span class="fcrd2-download-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M3 12h18"></path></svg></span>
+        <span class="fcrd2-download-text"><span class="label">Soluciones Red FC</span><span class="desc">Archivos de solución de la Red FC para post-proceso.</span></span>
+        <a class="fcrd2-download-action" href="#" aria-disabled="true" data-pending-url="true" rel="noopener noreferrer">Descargar<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></a>
+      </div>
+      <div class="fcrd2-download-row">
+        <span class="fcrd2-download-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v4H9zM4 21V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12"></path><path d="M4 21h16"></path></svg></span>
+        <span class="fcrd2-download-text"><span class="label">Hojas Topográficas Georreferenciadas</span><span class="desc">Cartografía topográfica de referencia del territorio nacional.</span></span>
+        <a class="fcrd2-download-action" href="#" aria-disabled="true" data-pending-url="true" rel="noopener noreferrer">Descargar<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></a>
+      </div>
+    </div>
+  </div>
+  <a href="#inicio" class="fcrd2-section-top" aria-label="Subir a Inicio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></a>
+</section>
+
+<footer class="fcrd2-footer" id="contactos">
+  <div class="fcrd2-footer-grid">
+    <div class="fcrd2-footer-col">
+      <span class="label">Dirección</span>
+      <span>Calle E 8, Santo Domingo, D.N.</span>
+      <a href="https://maps.app.goo.gl/iwAJiMeMtxx2GqcY8" target="_blank" rel="noopener noreferrer">Ver en Google Maps →</a>
+    </div>
+    <div class="fcrd2-footer-col">
+      <span class="label">Teléfonos</span>
+      <a href="tel:+18098232845">+1 (809) 823-2845</a>
+      <a href="tel:+18292504307">+1 (829) 250-4307</a>
+    </div>
+    <div class="fcrd2-footer-col">
+      <span class="label">Contactos</span>
+      <a href="mailto:fundcorsrd@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M22 6l-10 7L2 6"></path></svg>fundcorsrd@gmail.com</a>
+      <a href="https://instagram.com/fundcorsrd" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>@fundcorsrd</a>
+      <a class="fcrd2-footer-wa" href="https://wa.me/18292504307" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"></path></svg>WhatsApp</a>
+    </div>
+  </div>
+  <div class="fcrd2-footer-bottom">
+    <span class="fcrd2-footer-copy">© 2026 FUNDCORSRD — Fundación para el Establecimiento de la Red de Estaciones Permanentes de la República Dominicana.</span>
+  </div>
+</footer>
+
+<script type="module" src="js/main.js" defer></script>
+</body>
+</html>
