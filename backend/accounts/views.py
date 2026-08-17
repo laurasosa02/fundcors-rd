@@ -137,31 +137,30 @@ def _verify_recaptcha(token, remote_ip):
         return False
 
 
-def _send_admin_registration_email(request, user):
-    approve_token = make_approval_token(user.id, "approve")
-    reject_token = make_approval_token(user.id, "reject")
-    approve_url = request.build_absolute_uri(
-        f"/auth/magic-approve/?token={approve_token}"
-    )
-    reject_url = request.build_absolute_uri(
-        f"/auth/magic-reject/?token={reject_token}"
-    )
-
+def _send_admin_registration_email(user):
+    """Informational only - registration no longer waits on any admin
+    decision, the account activates automatically once the applicant
+    verifies their email (see verify_email_view). This is just an FYI so
+    the foundation's staff knows a new agrimensor signed up; there is
+    nothing for them to click or approve here. An admin who does need to
+    deactivate a problematic account can still do so from
+    /django-admin/ (the "Rechazar usuarios seleccionados" action).
+    """
     message = (
-        "Nueva solicitud de registro en el portal de FUNDCORSRD.\n\n"
+        "Nuevo registro en el portal de FUNDCORSRD (se activa "
+        "automaticamente al verificar el correo, sin necesitar "
+        "aprobacion).\n\n"
         f"Nombre: {user.get_full_name() or user.username}\n"
         f"Cedula: {user.cedula}\n"
         f"Telefono: {user.telefono}\n"
-        f"Correo: {user.email}\n\n"
-        f"Aprobar: {approve_url}\n"
-        f"Rechazar: {reject_url}\n"
+        f"Correo: {user.email}\n"
     )
 
     # Registration must succeed even if email delivery fails, so this is
     # fail_silently. If it does fail, log it rather than swallowing it
     # without a trace.
     sent = send_mail(
-        subject="Nueva solicitud de registro - FUNDCORSRD",
+        subject="Nuevo registro - FUNDCORSRD",
         message=message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
@@ -175,37 +174,11 @@ def _send_admin_registration_email(request, user):
         )
 
 
-def _send_approval_notification_email(user):
-    """Applicant-facing "your account was approved" email.
-
-    Content mirrors the notification sent by the approve_users admin
-    action.
-    """
-    sent = send_mail(
-        subject="Tu cuenta de FUNDCORSRD ha sido aprobada",
-        message=(
-            f"Hola {user.get_full_name() or user.username},\n\n"
-            "Tu cuenta en el portal de FUNDCORSRD ha sido aprobada. "
-            "Ya puedes iniciar sesion.\n\n"
-            "FUNDCORSRD"
-        ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        fail_silently=True,
-    )
-    if not sent:
-        logger.warning(
-            "Failed to send approval-notification email for user id=%s email=%s",
-            user.id,
-            user.email,
-        )
-
-
 def _send_verification_email(request, user):
-    """Sent immediately on registration - separate from and in addition to
-    the admin-approval flow. Confirms the applicant actually controls the
-    email address they registered with, independent of whether an admin
-    has reviewed the account yet.
+    """Sent immediately on registration. Confirms the applicant actually
+    controls the email address they registered with - clicking the link
+    is what activates the account (see verify_email_view), there is no
+    separate admin-approval step.
     """
     token = make_approval_token(user.id, "verify_email")
     verify_url = request.build_absolute_uri(f"/auth/verify-email/?token={token}")
@@ -289,7 +262,7 @@ def register_view(request):
             status=400,
         )
 
-    _send_admin_registration_email(request, user)
+    _send_admin_registration_email(user)
     _send_verification_email(request, user)
 
     return JsonResponse(
@@ -324,9 +297,15 @@ def login_view(request):
         )
 
     if user.status == User.Status.PENDING:
+        # Defensive fallback, not expected in the normal flow: status
+        # auto-transitions to APPROVED the moment email_verified_at is
+        # set (see verify_email_view), so by the time email_verified_at
+        # is not None above, status should already be APPROVED or
+        # REJECTED - this only fires if an admin manually reset a
+        # verified user's status back to pending from /django-admin/.
         return JsonResponse(
             {
-                "message": "Tu cuenta aun esta pendiente de aprobacion",
+                "message": "Tu cuenta no esta activa. Contacta a FUNDCORSRD para mas informacion.",
                 "status": "pending",
             },
             status=403,
@@ -384,13 +363,13 @@ def _user_not_found_response():
 def _confirm_form_response(request, token, question_html):
     """Renders a GET-safe confirmation page with a POST form.
 
-    Used by every one-click email link that mutates state (account
-    approve/reject, email verification): the actual mutation never
-    happens on a bare GET - mail clients, antivirus link-scanners, and
-    chat/webmail link-unfurlers routinely prefetch every URL found in an
-    email body, which would otherwise silently trigger the mutation
-    before a human ever looks at it. Callers are responsible for
-    HTML-escaping any user-controlled values in question_html.
+    Used by one-click email links that mutate state (currently just
+    email verification): the actual mutation never happens on a bare
+    GET - mail clients, antivirus link-scanners, and chat/webmail
+    link-unfurlers routinely prefetch every URL found in an email body,
+    which would otherwise silently trigger the mutation before a human
+    ever looks at it. Callers are responsible for HTML-escaping any
+    user-controlled values in question_html.
     """
     csrf_token = get_token(request)
     return HttpResponse(
@@ -406,67 +385,14 @@ def _confirm_form_response(request, token, question_html):
     )
 
 
-def _result_page_response(user, message):
-    return HttpResponse(
-        "<!doctype html><html><body>"
-        f"<p>{message} para "
-        f"<strong>{escape(user.get_full_name() or user.username)}</strong> "
-        f"({escape(user.email)}).</p>"
-        "</body></html>",
-        content_type="text/html",
-    )
-
-
-def _account_question_html(user, action_label):
-    return (
-        f"{action_label} la cuenta de "
-        f"<strong>{escape(user.get_full_name() or user.username)}</strong> "
-        f"({escape(user.email)}, cedula {escape(user.cedula)}, "
-        f"telefono {escape(user.telefono)})?"
-    )
-
-
-@require_http_methods(["GET", "POST"])
-def magic_approve_view(request):
-    token = request.GET.get("token", "") if request.method == "GET" else request.POST.get("token", "")
-    payload = read_approval_token(token)
-    if payload is None or payload.get("action") != "approve":
-        return _invalid_link_response()
-
-    user = User.objects.filter(pk=payload.get("user_id")).first()
-    if user is None:
-        return _user_not_found_response()
-
-    if request.method == "GET":
-        return _confirm_form_response(request, token, _account_question_html(user, "Aprobar"))
-
-    user.status = User.Status.APPROVED
-    user.save()
-    _send_approval_notification_email(user)
-    return _result_page_response(user, "Cuenta aprobada")
-
-
-@require_http_methods(["GET", "POST"])
-def magic_reject_view(request):
-    token = request.GET.get("token", "") if request.method == "GET" else request.POST.get("token", "")
-    payload = read_approval_token(token)
-    if payload is None or payload.get("action") != "reject":
-        return _invalid_link_response()
-
-    user = User.objects.filter(pk=payload.get("user_id")).first()
-    if user is None:
-        return _user_not_found_response()
-
-    if request.method == "GET":
-        return _confirm_form_response(request, token, _account_question_html(user, "Rechazar"))
-
-    user.status = User.Status.REJECTED
-    user.save()
-    return _result_page_response(user, "Cuenta rechazada")
-
-
 @require_http_methods(["GET", "POST"])
 def verify_email_view(request):
+    """Clicking this link is the ONLY thing that activates an account -
+    there is no separate admin-approval step. The POST branch marks the
+    email verified and, in the same action, approves the account
+    (unless it was already explicitly rejected by an admin - a stale
+    verification link must never resurrect a banned account).
+    """
     token = request.GET.get("token", "") if request.method == "GET" else request.POST.get("token", "")
     payload = read_approval_token(token)
     if payload is None or payload.get("action") != "verify_email":
@@ -480,15 +406,28 @@ def verify_email_view(request):
         question = f"¿Confirmar que <strong>{escape(user.email)}</strong> es tu correo electrónico?"
         return _confirm_form_response(request, token, question)
 
+    update_fields = []
     if user.email_verified_at is None:
         user.email_verified_at = timezone.now()
-        user.save(update_fields=["email_verified_at"])
+        update_fields.append("email_verified_at")
+    if user.status != User.Status.REJECTED and user.status != User.Status.APPROVED:
+        user.status = User.Status.APPROVED
+        update_fields.append("status")
+    if update_fields:
+        user.save(update_fields=update_fields)
+
+    if user.status == User.Status.REJECTED:
+        activation_message = (
+            "Tu correo quedó verificado, pero esta cuenta fue desactivada. "
+            "Contacta a FUNDCORSRD para más información."
+        )
+    else:
+        activation_message = "Tu cuenta ya está activa. Ya puedes iniciar sesión."
 
     return HttpResponse(
         "<!doctype html><html><body>"
         f"<p>Correo verificado para <strong>{escape(user.email)}</strong>. "
-        "Ya puedes iniciar sesión una vez tu cuenta sea aprobada por un "
-        "administrador.</p>"
+        f"{activation_message}</p>"
         "</body></html>",
         content_type="text/html",
     )

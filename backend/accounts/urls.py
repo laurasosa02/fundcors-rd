@@ -10,7 +10,5 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("me/", views.me_view, name="me"),
-    path("magic-approve/", views.magic_approve_view, name="magic-approve"),
-    path("magic-reject/", views.magic_reject_view, name="magic-reject"),
     path("verify-email/", views.verify_email_view, name="verify-email"),
 ]

@@ -10,7 +10,7 @@ import { renderDownloads } from './downloads.js';
 import { RECAPTCHA_SITE_KEY } from '../config.js';
 
 const REGISTER_SUCCESS_MSG =
-  'Revisa tu correo para verificar tu cuenta. Luego, un administrador revisará tu solicitud y te notificaremos cuando sea aprobada.';
+  'Revisa tu correo para verificar tu cuenta y activar tu acceso de inmediato.';
 const PASSWORD_MISMATCH_MSG = 'Las contraseñas no coinciden.';
 const RECAPTCHA_REQUIRED_MSG = 'Por favor, completa la verificación de seguridad.';
 const LOGIN_INVALID_MSG = 'Credenciales inválidas.';

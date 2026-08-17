@@ -8,7 +8,7 @@ Estos puntos no están confirmados desde este entorno de desarrollo y deben veri
 
 1. **Versión de Python disponible** y el mecanismo exacto para montar una app Python (lo más probable es un sistema tipo Passenger/WSGI, donde el panel pide un archivo `passenger_wsgi.py` — ya incluido en `backend/passenger_wsgi.py`).
 2. **Dónde se puede montar la app Python**: idealmente en un subdominio propio, por ejemplo `api.fundcorsrd.com`, apuntando únicamente a la carpeta `backend/`. El dominio principal (`fundcorsrd.com`) se deja para los archivos estáticos del frontend. (Un subdominio evita ambigüedades de cómo el panel maneja las rutas — es la opción más simple y confiable).
-3. **Conexiones salientes permitidas**: el backend necesita poder hacer peticiones HTTP salientes hacia `190.166.228.161:2103` (el caster NTRIP, para el mapa) y hacia un servidor SMTP (para los correos de aprobación/inscripción). Si el hosting bloquea alguna de las dos, hay que pedir que la habiliten, o usar un proveedor de correo transaccional por API HTTPS en su lugar.
+3. **Conexiones salientes permitidas**: el backend necesita poder hacer peticiones HTTP salientes hacia `190.166.228.161:2103` (el caster NTRIP, para el mapa) y hacia un servidor SMTP (para los correos de verificación/inscripción). Si el hosting bloquea alguna de las dos, hay que pedir que la habiliten, o usar un proveedor de correo transaccional por API HTTPS en su lugar.
 4. **Persistencia del sistema de archivos**: la base de datos (`backend/data/db.sqlite3`) debe sobrevivir entre despliegues y reinicios de la app. Confirmar que la carpeta de la aplicación no se borra/reemplaza completamente en cada actualización.
 5. **Acceso SSH** (además de FTP/SFTP): si existe, el script de despliegue (`scripts/deploy.sh`) puede automatizar los pasos de instalación/migración también en el servidor. Si no existe, esos pasos puntuales (ver paso 4 abajo) se hacen manualmente por el panel — no es un bloqueante, solo hace falta la primera vez y cuando cambian las dependencias o el modelo de datos.
 
@@ -21,13 +21,13 @@ Estos puntos no están confirmados desde este entorno de desarrollo y deben veri
    python manage.py migrate
    python manage.py createsuperuser
    ```
-   El `createsuperuser` crea la primera cuenta de administrador — con ella se entra a `/django-admin/` para aprobar/rechazar registros de agrimensores.
+   El `createsuperuser` crea la primera cuenta de administrador — con ella se entra a `/django-admin/`. El registro de agrimensores se activa solo (ver sección 4), pero esta cuenta sigue siendo útil para desactivar una cuenta problemática si hace falta.
 3. Configurar las variables de entorno en el panel (ver `backend/.env.example` para la lista completa con explicación de cada una). Como mínimo:
    - `DJANGO_SECRET_KEY` — generar uno nuevo y real, nunca reusar el de desarrollo.
    - `DJANGO_SETTINGS_MODULE=config.settings.prod`
    - `DJANGO_ALLOWED_HOSTS` — el hostname real del backend, ej. `api.fundcorsrd.com`.
    - `FRONTEND_ORIGIN` — el origen real del frontend, ej. `https://fundcorsrd.com`.
-   - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` — credenciales SMTP reales, para que los correos de aprobación/inscripción se envíen de verdad (en desarrollo solo se imprimen en consola).
+   - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` — credenciales SMTP reales, para que los correos de verificación/inscripción se envíen de verdad (en desarrollo solo se imprimen en consola).
    - Los 5 `DOWNLOAD_URL_*` (RINEX, Manzanero, Soluciones, Hojas, CORSDist) — si se quiere sobreescribir los enlaces actuales (ver la nota de "Riesgo residual" abajo). Si no se definen, el backend usa los enlaces reales actuales como valor por defecto.
    - `RECAPTCHA_SECRET_KEY` — **sin esto, el registro rechaza todas las solicitudes** (falla cerrado a propósito, en vez de aceptar en silencio la clave de prueba pública de Google). Hay que solicitar un par de claves real (site key + secret key) en https://www.google.com/recaptcha/admin para el dominio real de producción, con una cuenta de Google que tenga acceso a ese dominio — esto **no lo puede hacer nadie más que el cliente/dueño del dominio**. Una vez obtenida: poner la secret key aquí como `RECAPTCHA_SECRET_KEY`, y actualizar la constante `RECAPTCHA_SITE_KEY` en `frontend/src/js/config.js` con la site key correspondiente (esa sí es pública, va directo en el código del frontend, no como variable de entorno) antes de compilar y subir el frontend.
 4. Reiniciar la app Python para que tome las variables de entorno (en hosting tipo Passenger, normalmente se hace tocando un archivo `tmp/restart.txt` dentro de la carpeta de la app — confirmar el método exacto con soporte de Network Solutions si el panel no tiene un botón de "Restart").
@@ -53,12 +53,17 @@ Este script:
 
 Antes del primer uso, copiar `scripts/deploy.example.env` a `scripts/deploy.env` (no se sube a git) con las credenciales FTP/SSH reales.
 
-## 4. Cómo aprobar cuentas de agrimensores
+## 4. Activación de cuentas de agrimensores
 
-Cuando alguien se registra desde el sitio, queda en estado "pendiente" y **no puede iniciar sesión ni ver las Descargas Autorizadas** hasta ser aprobado. Dos formas de aprobar:
+El registro **no requiere ninguna aprobación manual**. El flujo es automático:
 
-- **Correo con un clic**: el registro dispara un correo a `ADMIN_NOTIFY_EMAIL` con botones "Aprobar"/"Rechazar" — un clic basta, sin necesidad de entrar a ningún panel.
-- **Panel de administración**: entrando a `https://api.fundcorsrd.com/django-admin/` con la cuenta creada en el paso 1, en la sección Users se puede filtrar por estado y usar las acciones masivas "Aprobar seleccionados"/"Rechazar seleccionados".
+1. El usuario completa el formulario de registro (el reCAPTCHA se valida en el momento).
+2. Le llega un correo pidiéndole que verifique su dirección de correo.
+3. En cuanto hace clic en ese enlace (y confirma en la página que se abre — un solo clic, existe esa pantalla intermedia para que un escáner de enlaces de correo/antivirus no pueda activar la cuenta él solo al abrir el correo automáticamente antes de que el usuario lo haga), **su cuenta queda activa de inmediato** y ya puede iniciar sesión y ver las Descargas Autorizadas.
+
+Además, cuando alguien se registra, `ADMIN_NOTIFY_EMAIL` recibe un correo informativo (nombre, cédula, teléfono, correo) — es solo para que el staff de FUNDCORSRD esté al tanto, no hay nada que aprobar ni ningún enlace que haga falta pulsar ahí.
+
+Si en algún momento hay que **desactivar una cuenta** (por ejemplo, un mal uso comprobado), entrando a `https://api.fundcorsrd.com/django-admin/` con la cuenta creada en el paso 1, en la sección Users se puede usar la acción masiva "Rechazar usuarios seleccionados" sobre la cuenta en cuestión — eso sí bloquea el login de inmediato, incluso si esa persona ya había verificado su correo antes.
 
 ## 5. Riesgo residual: enlaces de Dropbox
 
@@ -67,5 +72,5 @@ Las "Descargas Autorizadas" (Mapa Manzanero, Soluciones Red FC, Hojas Topográfi
 ## 6. Verificación post-despliegue
 
 - `curl -i https://api.fundcorsrd.com/downloads/` sin cookie de sesión debe devolver 401 y el cuerpo no debe contener `dropbox.com` ni `rinex.hairo` en ningún lado.
-- Registrar una cuenta de prueba real con el reCAPTCHA real visible y resuelto (si el sitio muestra el checkbox de prueba de Google en vez del real, es porque `RECAPTCHA_SITE_KEY` en `frontend/src/js/config.js` sigue en el valor de prueba — falta actualizarlo). Confirmar que llegan DOS correos: el de verificación de correo (al usuario) y el de notificación de registro (al `ADMIN_NOTIFY_EMAIL`). Intentar iniciar sesión antes de verificar el correo — debe rechazar con el mensaje de "verifica tu correo". Hacer clic en el enlace de verificación, confirmar en la página de confirmación, luego aprobar la cuenta (correo de un clic o `/django-admin/`), y solo entonces confirmar que el login funciona y aparecen los 4 enlaces reales.
+- Registrar una cuenta de prueba real con el reCAPTCHA real visible y resuelto (si el sitio muestra el checkbox de prueba de Google en vez del real, es porque `RECAPTCHA_SITE_KEY` en `frontend/src/js/config.js` sigue en el valor de prueba — falta actualizarlo). Confirmar que llegan DOS correos: el de verificación de correo (al usuario) y el informativo de nuevo registro (al `ADMIN_NOTIFY_EMAIL`, sin enlaces de acción). Intentar iniciar sesión antes de verificar el correo — debe rechazar con el mensaje de "verifica tu correo". Hacer clic en el enlace de verificación y confirmar en la página que aparece — el login debe funcionar inmediatamente después, sin ningún paso de aprobación, y deben aparecer los 5 enlaces reales de Descargas Autorizadas.
 - Revisar `https://api.fundcorsrd.com/stations/` — debe devolver estaciones reales (no una lista vacía) si el caster NTRIP es alcanzable desde el hosting, y las ventanas emergentes de cada estación en el mapa deben mostrar latitud/longitud y la hora de la última actualización debe verse en la leyenda.

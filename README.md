@@ -1,6 +1,6 @@
 # FUNDCORSRD — Portal Web
 
-Portal institucional de FUNDCORSRD (Fundación para el Establecimiento de la Red de Estaciones Permanentes de la República Dominicana): mapa en tiempo real de la red CORS, información institucional, formulario de inscripción, y un área de acceso para agrimensores con descargas autorizadas tras aprobación manual.
+Portal institucional de FUNDCORSRD (Fundación para el Establecimiento de la Red de Estaciones Permanentes de la República Dominicana): mapa en tiempo real de la red CORS, información institucional, formulario de inscripción, y un área de acceso para agrimensores con descargas autorizadas tras verificar su correo electrónico.
 
 Implementación standalone (sin WordPress): frontend en HTML/CSS/JS puro + backend en Django (Python), pensados para desplegarse juntos en una sola cuenta de hosting con soporte Python nativo (Network Solutions).
 
@@ -10,7 +10,7 @@ El paquete de diseño original que sirvió de referencia para esta recreación v
 
 ```
 frontend/    Sitio estático (HTML/CSS/JS vanilla + un paso de build con esbuild)
-backend/     API en Django (auth con aprobación manual, proxy del mapa NTRIP, descargas gateadas)
+backend/     API en Django (auth con verificación de correo, proxy del mapa NTRIP, descargas gateadas)
 docs/        Guía de despliegue
 scripts/     Script de despliegue de un solo comando
 ```
@@ -29,7 +29,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 export DJANGO_SECRET_KEY=dev-only-local-secret
 python manage.py migrate
-python manage.py createsuperuser   # crea el primer admin, para aprobar cuentas desde /django-admin/
+python manage.py createsuperuser   # crea el primer admin, para gestionar/desactivar cuentas desde /django-admin/ si hace falta
 python manage.py runserver 127.0.0.1:8000
 ```
 
@@ -42,7 +42,7 @@ npm run build   # genera frontend/dist/
 npm run dev     # sirve frontend/src/ sin bundlear, para iterar rápido
 ```
 
-Con ambos corriendo, abre `http://localhost:5500` (o `http://localhost:8000/django-admin/` para el panel de administración). El registro de una cuenta queda en estado "pendiente" hasta que un admin la aprueba desde `/django-admin/` (o desde el enlace de un clic que llega por correo — en desarrollo, los correos solo se imprimen en la consola del backend, no se envían de verdad).
+Con ambos corriendo, abre `http://localhost:5500` (o `http://localhost:8000/django-admin/` para el panel de administración). El registro de una cuenta se activa automáticamente en cuanto el usuario hace clic en el enlace de verificación que le llega por correo — no requiere ninguna aprobación manual (en desarrollo, los correos solo se imprimen en la consola del backend, no se envían de verdad). Un admin sí puede desactivar una cuenta después, desde `/django-admin/`, si hace falta.
 
 ## Despliegue a producción
 
