@@ -34,4 +34,4 @@ export const CSRF_HEADER_NAME = 'X-CSRFToken';
 // https://www.google.com/recaptcha/admin for the real production domain
 // before deploying — until then, registration has zero real bot
 // protection even though the checkbox appears to work.
-export const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+export const RECAPTCHA_SITE_KEY = '6LeCI40tAAAAAN-qNHx-ziQoAX-lwoTkUnpw5CeQ';

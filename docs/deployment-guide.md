@@ -10,7 +10,7 @@ Estos puntos no están confirmados desde este entorno de desarrollo y deben veri
 2. **Dónde se puede montar la app Python**: idealmente en un subdominio propio, por ejemplo `api.fundcorsrd.com`, apuntando únicamente a la carpeta `backend/`. El dominio principal (`fundcorsrd.com`) se deja para los archivos estáticos del frontend. (Un subdominio evita ambigüedades de cómo el panel maneja las rutas — es la opción más simple y confiable).
 3. **Conexiones salientes permitidas**: el backend necesita poder hacer peticiones HTTP salientes hacia `190.166.228.161:2103` (el caster NTRIP, para el mapa) y hacia un servidor SMTP (para los correos de verificación/inscripción). Si el hosting bloquea alguna de las dos, hay que pedir que la habiliten, o usar un proveedor de correo transaccional por API HTTPS en su lugar.
 4. **Persistencia del sistema de archivos**: la base de datos (`backend/data/db.sqlite3`) debe sobrevivir entre despliegues y reinicios de la app. Confirmar que la carpeta de la aplicación no se borra/reemplaza completamente en cada actualización.
-5. **Acceso SSH** (además de FTP/SFTP): si existe, el script de despliegue (`scripts/deploy.sh`) puede automatizar los pasos de instalación/migración también en el servidor. Si no existe, esos pasos puntuales (ver paso 4 abajo) se hacen manualmente por el panel — no es un bloqueante, solo hace falta la primera vez y cuando cambian las dependencias o el modelo de datos.
+5. **Acceso SSH** (además de FTP/SFTP): si existe, el script de despliegue (`scripts/deploy.sh`) puede automatizar los pasos de instalación/migración también en el servidor. Si no existe, esos pasos puntuales (ver paso 4 abajo) se hacen manualmente por el panel — no es un bloqueante, solo hace falta la primera vez y cuando cambian las dependencias o el modelo de datos. (Comprobado el 2026-08-17: el endpoint de `ftp.fundcorsrd.com:2222` es un servidor solo-SFTP sin shell, así que **por esa vía no hay SSH**; si hace falta shell, hay que pedirlo a soporte de Network Solutions).
 
 ## 1. Configuración inicial del backend (una sola vez)
 
@@ -41,17 +41,28 @@ Agregar en el panel de DNS de Network Solutions un registro para el subdominio d
 Después de la configuración inicial, para publicar cambios:
 
 ```bash
-./scripts/deploy.sh
+./scripts/deploy.sh --dry-run   # primero: muestra qué subiría y qué borraría, sin tocar el servidor
+./scripts/deploy.sh             # el despliegue real
 ```
 
 Este script:
-1. Compila el frontend (`npm run build` dentro de `frontend/`).
+1. Compila el frontend (`npm run build` dentro de `frontend/`). Si la máquina no tiene Node instalado, reutiliza el `frontend/dist/` ya compilado, pero **solo** si ningún archivo de `frontend/src/` es más nuevo que él; si el build está desactualizado, se detiene en vez de publicar una versión vieja en silencio.
 2. Sube `frontend/dist/` por SFTP/FTP al `public_html` (o la carpeta que corresponda al dominio principal).
 3. Sube los archivos de `backend/` por SFTP/FTP a la carpeta de la app Python.
 4. Si hay acceso SSH configurado (ver variables al inicio del script), además ejecuta en el servidor `pip install -r requirements.txt`, `python manage.py migrate`, `python manage.py collectstatic`, y reinicia la app — en ese caso el flujo es realmente un solo comando.
 5. Si no hay SSH, esos últimos pasos hay que hacerlos manualmente por el panel de Network Solutions **solo cuando cambien las dependencias (`requirements.txt`) o los modelos de datos** — una actualización normal de contenido/frontend no los necesita.
 
-Antes del primer uso, copiar `scripts/deploy.example.env` a `scripts/deploy.env` (no se sube a git) con las credenciales FTP/SSH reales.
+Los dos `mirror` van con `--delete`, es decir dejan la carpeta remota como copia exacta de la local: **todo lo que esté en esas rutas remotas y no en este repo se borra**. Por eso el script pide escribir `deploy` para confirmar antes de empezar, y por eso conviene pasar siempre primero por `--dry-run`.
+
+Antes del primer uso, copiar `scripts/deploy.example.env` a `scripts/deploy.env` (no se sube a git) con las credenciales reales. La contraseña se puede dejar fuera del archivo: si `DEPLOY_FTP_PASS` no está definida, el script la pide al ejecutarse y así nunca queda escrita en disco.
+
+Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por FTP como por SFTP.
+
+### Datos verificados de este servidor (2026-08-17)
+
+- **Host:** `ftp.fundcorsrd.com` (resuelve a `66.96.147.168`) — **puerto 2222**, protocolo SFTP. El puerto no es el 22 por defecto, así que hay que declararlo explícitamente (`DEPLOY_FTP_PORT=2222`).
+- El servidor se identifica como `SSH-2.0-ipage FTP Server`: es un endpoint **solo de transferencia de archivos, sin shell**. Por eso `DEPLOY_SSH_HOST` se deja vacío — no puede ejecutar `pip`/`migrate`/`collectstatic` remotamente, y esos pasos van por el panel.
+- El servidor solo ofrece claves de host `ssh-rsa`/`ssh-dss`, que OpenSSH 8.8+ rechaza por defecto (falla con `no matching host key type found`). `deploy.sh` ya lo resuelve pasándole `-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa` únicamente a esta conexión, sin alterar la configuración SSH global de la máquina.
 
 ## 4. Activación de cuentas de agrimensores
 
