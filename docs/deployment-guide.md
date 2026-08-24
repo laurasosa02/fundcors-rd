@@ -1,6 +1,6 @@
-# Guía de despliegue — FUNDCORSRD en Network Solutions
+# Guía de despliegue — FUNDCORSRD
 
-Esta guía asume que el frontend (sitio estático) y el backend (Django) se despliegan **juntos, en la misma cuenta de Network Solutions**, ya que Network Solutions soporta Python de forma nativa. No se necesita contratar un segundo hosting.
+El sitio se despliega en dos partes: el **frontend** (sitio estático) va en la cuenta de Network Solutions del cliente; el **backend** (Django) vive en PythonAnywhere. Son dos hostings separados — cada uno se actualiza con su propio procedimiento (secciones 1-3 para el frontend en Network Solutions, sección 3-bis para el backend en PythonAnywhere).
 
 ## 0. Antes de empezar — verificar con Network Solutions
 
@@ -63,6 +63,57 @@ Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por 
 - **Host:** `ftp.fundcorsrd.com` (resuelve a `66.96.147.168`) — **puerto 2222**, protocolo SFTP. El puerto no es el 22 por defecto, así que hay que declararlo explícitamente (`DEPLOY_FTP_PORT=2222`).
 - El servidor se identifica como `SSH-2.0-ipage FTP Server`: es un endpoint **solo de transferencia de archivos, sin shell**. Por eso `DEPLOY_SSH_HOST` se deja vacío — no puede ejecutar `pip`/`migrate`/`collectstatic` remotamente, y esos pasos van por el panel.
 - El servidor solo ofrece claves de host `ssh-rsa`/`ssh-dss`, que OpenSSH 8.8+ rechaza por defecto (falla con `no matching host key type found`). `deploy.sh` ya lo resuelve pasándole `-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa` únicamente a esta conexión, sin alterar la configuración SSH global de la máquina.
+
+## 3-bis. Actualizar el backend (PythonAnywhere)
+
+El backend está en una cuenta de PythonAnywhere de pago (plan Hacker o superior), subido ahí manualmente (no como clon de git). Esto se puede convertir a un clon de git **una sola vez**, y a partir de ahí cada actualización se reduce a un `git pull`.
+
+### Paso único: convertir la carpeta actual en un clon de git
+
+Desde la consola Bash de PythonAnywhere (o por SSH, si la usas desde tu propia terminal — con un plan de pago tienes acceso SSH; el host y las instrucciones exactas están en la pestaña **Account → SSH access** del panel):
+
+```bash
+cd ~/ruta-a-tu-carpeta-del-backend   # confirma la ruta real con: ls ~ y con la pestaña "Web" del panel (Source code / Working directory)
+
+# Respaldo de seguridad antes de tocar nada (por si algo no cuadra):
+cp -r . ../backend-respaldo-$(date +%Y%m%d)
+
+git init
+git remote add origin https://github.com/laurasosa02/fundcors-rd.git
+git fetch origin
+git reset --hard origin/main
+```
+
+`git reset --hard` solo toca archivos que están en el repositorio — `.env`, la base de datos (`db.sqlite3`) y el entorno virtual no están versionados (están en `.gitignore`), así que no se tocan. Aun así, revisa con `git status` que no falte nada esperado antes de continuar, y borra la carpeta de respaldo (`backend-respaldo-...`) una vez que confirmes que todo sigue funcionando.
+
+Como el repositorio completo incluye tanto `frontend/` como `backend/`, y esta carpeta en PythonAnywhere debe contener solo el backend, hace falta decirle a git que solo mantenga actualizada la subcarpeta `backend/` dentro de esta carpeta. La forma más simple: en vez de clonar el repo completo aquí, mover el working directory de la app Python (configurado en la pestaña **Web** del panel) para que apunte a `~/fundcors-rd/backend` después de clonar el repo completo una vez en `~/fundcors-rd`:
+
+```bash
+cd ~
+git clone https://github.com/laurasosa02/fundcors-rd.git
+# copia tu .env existente (y cualquier otro archivo local que no esté en git) a ~/fundcors-rd/backend/
+```
+
+Después de esto, actualiza en la pestaña **Web** del panel de PythonAnywhere la ruta del código fuente / working directory / virtualenv para que apunten dentro de `~/fundcors-rd/backend/`, y borra la carpeta manual anterior una vez confirmes que la app sigue funcionando igual.
+
+### Actualizar después de cada cambio
+
+```bash
+cd ~/fundcors-rd
+git pull origin main
+cd backend
+pip install -r requirements.txt   # solo si requirements.txt cambió
+python manage.py migrate          # solo si hay migraciones nuevas
+```
+
+Y por último, recargar la app — con un plan de pago hay dos formas:
+
+- **Manual:** botón **Reload** en la pestaña **Web** del panel de PythonAnywhere (siempre funciona, un clic).
+- **Automatizado:** generando un token en **Account → API Token**, se puede recargar por línea de comandos (o meterlo como último paso de un script propio) sin entrar al panel:
+  ```bash
+  curl -X POST -H "Authorization: Token TU_TOKEN_AQUI" \
+    https://www.pythonanywhere.com/api/v0/user/TU_USUARIO/webapps/TU_DOMINIO/reload/
+  ```
 
 ## 4. Activación de cuentas de agrimensores
 
