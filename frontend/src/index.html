@@ -89,7 +89,7 @@
   <div class="fcrd2-bg-dot br" aria-hidden="true" style="bottom:70px;right:-50px;"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
   <div>
     <span class="fcrd2-eyebrow">Membresía</span>
-    <h2 class="fcrd2-h2" style="color:#0f5230;">Hacerse Usuario de la Red</h2>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Hacerse usuario de la red</h2>
     <p class="fcrd2-lead">Complete sus datos para iniciar el proceso de inscripción. Este formulario es independiente del acceso RINEX — la confirmación y los datos bancarios se coordinan directamente por WhatsApp.</p>
   </div>
   <div class="fcrd2-form-wrap">
@@ -164,7 +164,7 @@
   <div class="fcrd2-bg-dot tr" aria-hidden="true"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
   <div>
     <span class="fcrd2-eyebrow"><span id="fcrd2MapDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;"></span>Estado de la red</span>
-    <h2 class="fcrd2-h2" style="color:#0f5230;">Mapa de Estaciones CORS en Tiempo Real</h2>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Mapa de estaciones CORS en tiempo real</h2>
     <p class="fcrd2-lead">Consulte además las fuentes oficiales de monitoreo en vivo de la red.</p>
   </div>
   <div class="fcrd2-map-links">
@@ -186,7 +186,7 @@
   <div class="fcrd2-bg-dot bl" aria-hidden="true" style="width:110px;height:110px;bottom:40px;left:-16px;"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="25" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="50" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle cx="75" cy="75" r="74" fill="none" stroke="var(--silver-soft)" stroke-width="1.5"></circle><circle class="fcrd2-hero-dot-halo" cx="75" cy="75" r="3" fill="var(--green)" opacity="0.5"></circle><circle class="fcrd2-hero-dot" cx="75" cy="75" r="4" fill="var(--green)"></circle></svg></div>
   <div>
     <span class="fcrd2-eyebrow">Acceso</span>
-    <h2 class="fcrd2-h2" style="color:#0f5230;">Consola RINEX y Descargas Autorizadas</h2>
+    <h2 class="fcrd2-h2" style="color:#0f5230;">Consola RINEX y descargas autorizadas</h2>
   </div>
 
   <div class="fcrd2-auth-card fcrd2-auth-tabbed" id="fcrd2AuthCard">
@@ -204,13 +204,33 @@
         </div>
         <div class="fcrd2-field">
           <label for="fcrd2LoginPassword">Contraseña</label>
-          <input id="fcrd2LoginPassword" name="password" type="password" placeholder="••••••••" required>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2LoginPassword" name="password" type="password" placeholder="••••••••" required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
         </div>
         <div class="fcrd2-form-actions">
           <button type="submit" class="fcrd2-btn fcrd2-btn-primary">Iniciar Sesión</button>
         </div>
+        <button type="button" class="fcrd2-link-button" id="fcrd2ForgotPasswordLink">¿Olvidaste tu contraseña?</button>
         <p class="fcrd2-form-msg" id="fcrd2LoginMsg" role="alert"></p>
       </form>
+      <div class="fcrd2-forgot-password-panel" id="fcrd2ForgotPasswordPanel" hidden>
+        <p class="fcrd2-field-hint">Te enviaremos una contraseña temporal nueva al correo con el que te registraste.</p>
+        <form class="fcrd2-form-card" id="fcrd2ForgotPasswordForm">
+          <div class="fcrd2-field">
+            <label for="fcrd2ForgotPasswordEmail">Correo</label>
+            <input id="fcrd2ForgotPasswordEmail" name="email" type="email" placeholder="correo@ejemplo.com" required>
+          </div>
+          <div class="fcrd2-form-actions">
+            <button type="submit" class="fcrd2-btn fcrd2-btn-outline">Enviar contraseña temporal</button>
+          </div>
+          <p class="fcrd2-form-msg" id="fcrd2ForgotPasswordMsg" role="alert"></p>
+        </form>
+      </div>
     </div>
     <div class="fcrd2-auth-panel" data-tab-panel="register" style="display:none;">
       <form class="fcrd2-form-card" id="fcrd2RegisterForm">
@@ -232,12 +252,24 @@
         </div>
         <div class="fcrd2-field">
           <label for="fcrd2RegPassword">Contraseña</label>
-          <input id="fcrd2RegPassword" name="password" type="password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número." required>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2RegPassword" name="password" type="password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número." required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
           <span class="fcrd2-field-hint">Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número.</span>
         </div>
         <div class="fcrd2-field">
           <label for="fcrd2RegPasswordConfirm">Confirmar contraseña</label>
-          <input id="fcrd2RegPasswordConfirm" name="password_confirm" type="password" minlength="8" required>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2RegPasswordConfirm" name="password_confirm" type="password" minlength="8" required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
         </div>
         <div class="fcrd2-field">
           <div id="fcrd2Recaptcha" class="fcrd2-recaptcha"></div>

@@ -42,3 +42,8 @@
   .fcrd2-download-row{flex-wrap:wrap;}
   .fcrd2-download-action{margin-left:62px;}
 }
+
+@media (max-width:480px){
+  .fcrd2-auth-card{padding:24px 20px;min-height:0;}
+  .fcrd2-download-row{padding:16px;}
+}

@@ -73,6 +73,7 @@ function initScrollBehavior(header) {
 function initMobileToggle(header) {
   const toggle = document.getElementById('fcrd2MobileToggle');
   const overlay = document.getElementById('fcrd2MenuOverlay');
+  const closeBtn = document.getElementById('fcrd2MenuClose');
   if (!toggle || !overlay) return;
 
   const openMenu = () => {
@@ -102,6 +103,13 @@ function initMobileToggle(header) {
   overlay.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', closeMenu);
   });
+
+  // The "X" close button is a dedicated <button>, not one of the <a>
+  // links wired above — it had no click handler at all before this,
+  // which is why it did nothing when tapped on mobile.
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMenu);
+  }
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && overlay.classList.contains('open')) {

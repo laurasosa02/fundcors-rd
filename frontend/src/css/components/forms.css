@@ -18,6 +18,18 @@
 
 .fcrd2-field-hint{font-family:var(--font-body);font-size:12.5px;color:var(--carbon-soft);}
 
+/* ---------- Password visibility toggle ---------- */
+.fcrd2-password-wrap{position:relative;display:flex;align-items:center;}
+.fcrd2-password-wrap input{padding-right:34px;}
+.fcrd2-password-toggle{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:none;border:none;cursor:pointer;padding:0;color:var(--carbon-soft);transition:color 150ms var(--ease);}
+.fcrd2-password-toggle:hover{color:var(--green);}
+.fcrd2-password-toggle svg{width:18px;height:18px;}
+
+/* ---------- "¿Olvidaste tu contraseña?" link + inline panel ---------- */
+.fcrd2-link-button{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;font-family:var(--font-body);font-size:13.5px;color:var(--green-dark);text-decoration:underline;text-underline-offset:2px;}
+.fcrd2-link-button:hover{color:var(--green);}
+.fcrd2-forgot-password-panel{margin-top:4px;padding-top:20px;border-top:1px solid var(--silver-soft);display:flex;flex-direction:column;gap:14px;}
+
 .fcrd2-recaptcha{min-height:78px;}
 
 /* The reCAPTCHA widget itself is a fixed 304px wide. .fcrd2-section keeps
@@ -36,7 +48,7 @@
 
 .fcrd2-info-card{background:none;border:none;border-left:2px solid var(--green);border-radius:0;padding:4px 0 4px 22px;display:flex;flex-direction:column;gap:14px;}
 .fcrd2-info-card h4{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--carbon);}
-.fcrd2-info-card p{font-family:var(--font-body);font-size:14.5px;color:var(--carbon-soft);line-height:1.7;}
+.fcrd2-info-card p{font-family:var(--font-body);font-size:14.5px;color:var(--carbon-soft);line-height:1.7;text-align:justify;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;}
 .fcrd2-info-card ul{display:flex;flex-direction:column;gap:8px;padding-left:0;}
 .fcrd2-info-card li{list-style:none;font-family:var(--font-body);font-size:14.5px;color:var(--carbon);line-height:1.6;position:relative;padding-left:16px;text-align:left;}
 .fcrd2-info-card li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--green);}

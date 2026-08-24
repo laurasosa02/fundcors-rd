@@ -14,6 +14,20 @@
 
 html{-webkit-text-size-adjust:100%;}
 
+/* Safety net, not the primary fix: several decorative elements (the
+   background dots, corner brackets) are deliberately positioned to
+   bleed slightly past their own container's edge, which is only safe
+   when there's enough surrounding margin for the overhang to land
+   on-screen. Each of those is also given its own width-appropriate
+   media query, but this catches any case that slips through rather
+   than letting the whole page grow a horizontal scrollbar because of
+   a few decorative pixels. Deliberately on <html> only, not <body>:
+   a non-visible overflow on an ancestor of the sticky header can break
+   position:sticky, and html is already the document's normal scrolling
+   element, so this doesn't introduce a new scroll container the way
+   putting it on <body> would. */
+html{overflow-x:hidden;}
+
 body{
   width:100%;
   font-family:var(--font-body);

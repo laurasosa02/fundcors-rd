@@ -1,10 +1,13 @@
 import json
 import logging
+import secrets
 import ssl
+import string
 import urllib.parse
 import urllib.request
 
 import certifi
+from django_ratelimit.decorators import ratelimit
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -206,6 +209,51 @@ def _send_verification_email(request, user):
         )
 
 
+def _generate_temp_password(length=12):
+    """Cryptographically secure random password (uses `secrets`, never the
+    non-cryptographic `random` module) guaranteed to contain at least one
+    uppercase letter, one lowercase letter, and one digit, so it also
+    satisfies this project's own AUTH_PASSWORD_VALIDATORS complexity rule.
+    """
+    required = [
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.digits),
+    ]
+    pool = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    remaining = [secrets.choice(pool) for _ in range(length - len(required))]
+
+    password_chars = required + remaining
+    secrets.SystemRandom().shuffle(password_chars)
+    return "".join(password_chars)
+
+
+def _send_temp_password_email(user, new_password):
+    sent = send_mail(
+        subject="Tu nueva contrasena temporal - FUNDCORSRD",
+        message=(
+            f"Hola {user.get_full_name() or user.username},\n\n"
+            "Solicitaste recuperar el acceso a tu cuenta en el portal de "
+            "FUNDCORSRD. Esta es tu nueva contrasena temporal:\n\n"
+            f"    {new_password}\n\n"
+            "Inicia sesion con ella y, por tu seguridad, cambiala por una "
+            "de tu preferencia lo antes posible.\n\n"
+            "Si no solicitaste este cambio, contacta a FUNDCORSRD de "
+            "inmediato.\n\n"
+            "FUNDCORSRD"
+        ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email],
+        fail_silently=True,
+    )
+    if not sent:
+        logger.warning(
+            "Failed to send temporary-password email for user id=%s email=%s",
+            user.id,
+            user.email,
+        )
+
+
 @require_GET
 def csrf_view(request):
     token = get_token(request)
@@ -327,6 +375,49 @@ def login_view(request):
     return JsonResponse(
         {"status": "approved", "nombre": user.get_full_name() or user.username}
     )
+
+
+_FORGOT_PASSWORD_GENERIC_MESSAGE = (
+    "Si el correo esta registrado, te enviamos una contrasena temporal. "
+    "Revisa tu bandeja de entrada."
+)
+
+
+@require_POST
+@ratelimit(key="ip", rate="5/h", method="POST", block=False)
+def forgot_password_view(request):
+    """Generates and emails a brand-new random password for the account
+    matching the submitted email, replacing the old one - see the
+    project notes for why this mails a fresh password rather than a
+    reset link: simpler to build, and the client's explicit choice.
+
+    Always returns the same generic message whether or not the email
+    is actually registered - a different response per case would let
+    an attacker enumerate real accounts one guess at a time.
+    """
+    if getattr(request, "limited", False):
+        return JsonResponse(
+            {"message": "Demasiados intentos. Intenta mas tarde."}, status=429
+        )
+
+    data, error_response = _parse_json_body(request)
+    if error_response is not None:
+        return error_response
+
+    email = data.get("email")
+    if not isinstance(email, str) or not email.strip():
+        return JsonResponse(
+            {"errors": {"email": ["Este campo es obligatorio."]}}, status=400
+        )
+
+    user = User.objects.filter(email=email.strip()).first()
+    if user is not None:
+        new_password = _generate_temp_password()
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+        _send_temp_password_email(user, new_password)
+
+    return JsonResponse({"message": _FORGOT_PASSWORD_GENERIC_MESSAGE})
 
 
 @require_POST

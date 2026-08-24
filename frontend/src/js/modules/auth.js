@@ -15,6 +15,7 @@ const PASSWORD_MISMATCH_MSG = 'Las contraseñas no coinciden.';
 const RECAPTCHA_REQUIRED_MSG = 'Por favor, completa la verificación de seguridad.';
 const LOGIN_INVALID_MSG = 'Credenciales inválidas.';
 const GENERIC_ERROR_MSG = 'Ocurrió un error. Intenta de nuevo.';
+const FORGOT_PASSWORD_EMAIL_REQUIRED_MSG = 'Ingresa tu correo.';
 
 // reCAPTCHA state. The widget renders explicitly (see the script tag and
 // the fcrd-recaptcha-ready event dispatched in index.html) rather than
@@ -54,6 +55,8 @@ export async function initAuth() {
   const logoutBtn = document.getElementById('fcrd2LogoutBtn');
 
   initTabs(authCard);
+  initPasswordToggles(authCard);
+  initForgotPassword();
 
   if (loginForm) {
     loginForm.addEventListener('submit', (event) => {
@@ -74,6 +77,90 @@ export async function initAuth() {
   }
 
   await checkSession(authCard, downloads);
+}
+
+/**
+ * Wires every "show/hide password" eye button within authCard: each one
+ * toggles the type (password/text) of the password input it sits next to
+ * inside its shared .fcrd2-password-wrap, and swaps the eye/eye-off icon
+ * plus the button's accessible label to match the current state.
+ * @param {HTMLElement|null} authCard
+ */
+function initPasswordToggles(authCard) {
+  if (!authCard) return;
+
+  const toggles = Array.from(authCard.querySelectorAll('.fcrd2-password-toggle'));
+  toggles.forEach((toggle) => {
+    const wrap = toggle.closest('.fcrd2-password-wrap');
+    const input = wrap ? wrap.querySelector('input') : null;
+    const eyeIcon = toggle.querySelector('.fcrd2-icon-eye');
+    const eyeOffIcon = toggle.querySelector('.fcrd2-icon-eye-off');
+    if (!input) return;
+
+    toggle.addEventListener('click', () => {
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      toggle.setAttribute('aria-pressed', String(!showing));
+      toggle.setAttribute('aria-label', showing ? 'Mostrar contraseña' : 'Ocultar contraseña');
+      if (eyeIcon) eyeIcon.hidden = !showing;
+      if (eyeOffIcon) eyeOffIcon.hidden = showing;
+    });
+  });
+}
+
+/**
+ * Wires the "¿Olvidaste tu contraseña?" link to reveal the inline
+ * forgot-password mini-form, and that form's submit to
+ * POST /auth/forgot-password/. Always shows the same generic message
+ * regardless of whether the email is registered - the backend responds
+ * identically either way, on purpose (see accounts/views.py).
+ */
+function initForgotPassword() {
+  const link = document.getElementById('fcrd2ForgotPasswordLink');
+  const panel = document.getElementById('fcrd2ForgotPasswordPanel');
+  const form = document.getElementById('fcrd2ForgotPasswordForm');
+  if (!link || !panel) return;
+
+  link.addEventListener('click', () => {
+    panel.hidden = !panel.hidden;
+  });
+
+  if (form) {
+    form.addEventListener('submit', (event) => {
+      handleForgotPassword(event, form);
+    });
+  }
+}
+
+/**
+ * @param {SubmitEvent} event
+ * @param {HTMLFormElement} form
+ */
+async function handleForgotPassword(event, form) {
+  event.preventDefault();
+  const msgEl = document.getElementById('fcrd2ForgotPasswordMsg');
+  const email = form.elements.email.value.trim();
+
+  if (!email) {
+    setMessage(msgEl, FORGOT_PASSWORD_EMAIL_REQUIRED_MSG);
+    return;
+  }
+
+  let result;
+  try {
+    result = await apiFetch('/auth/forgot-password/', { method: 'POST', body: { email } });
+  } catch (err) {
+    setMessage(msgEl, GENERIC_ERROR_MSG);
+    return;
+  }
+
+  const { status, data } = result;
+
+  // 200 (generic success, regardless of whether the email exists) and 429
+  // (rate-limited) both carry a usable message from the backend; anything
+  // else (e.g. a malformed request) falls back to the generic message.
+  setMessage(msgEl, (data && data.message) || GENERIC_ERROR_MSG);
+  if (status === 200) form.reset();
 }
 
 /**
