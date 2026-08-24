@@ -114,7 +114,7 @@ LFTP_SCRIPT
 }
 
 echo "==> Uploading frontend/dist to $DEPLOY_FRONTEND_REMOTE_PATH"
-run_lftp "mirror --reverse --delete --verbose $DRY_RUN --exclude-glob .htaccess --exclude-glob mantenimiento.html --exclude-glob fundcorsrd-backend/ \"$ROOT_DIR/frontend/dist\" \"$DEPLOY_FRONTEND_REMOTE_PATH\""
+run_lftp "mirror --reverse --delete --verbose $DRY_RUN --exclude-glob .htaccess --exclude-glob mantenimiento.html --exclude-glob fundcorsrd-backend/ --exclude-glob .membership --exclude-glob stats/ \"$ROOT_DIR/frontend/dist\" \"$DEPLOY_FRONTEND_REMOTE_PATH\""
 
 echo "==> Uploading backend/ to $DEPLOY_BACKEND_REMOTE_PATH (excluding local-only files)"
 run_lftp "mirror --reverse --delete --verbose $DRY_RUN \

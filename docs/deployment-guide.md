@@ -63,6 +63,7 @@ Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por 
 - **Host:** `ftp.fundcorsrd.com` (resuelve a `66.96.147.168`) — **puerto 2222**, protocolo SFTP. El puerto no es el 22 por defecto, así que hay que declararlo explícitamente (`DEPLOY_FTP_PORT=2222`).
 - El servidor se identifica como `SSH-2.0-ipage FTP Server`: es un endpoint **solo de transferencia de archivos, sin shell**. Por eso `DEPLOY_SSH_HOST` se deja vacío — no puede ejecutar `pip`/`migrate`/`collectstatic` remotamente, y esos pasos van por el panel.
 - El servidor solo ofrece claves de host `ssh-rsa`/`ssh-dss`, que OpenSSH 8.8+ rechaza por defecto (falla con `no matching host key type found`). `deploy.sh` ya lo resuelve pasándole `-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa` únicamente a esta conexión, sin alterar la configuración SSH global de la máquina.
+- La raíz del sitio tiene un archivo `.membership` y una carpeta `stats/` (estadísticas de visitas tipo Webalizer) que genera y administra la propia plataforma de hosting — no son parte de este repo y la cuenta FTP no tiene permiso para borrarlos. `deploy.sh` los excluye explícitamente del espejado (`--exclude-glob .membership --exclude-glob stats/`) para que `mirror --delete` no intente tocarlos; sin esa exclusión, el intento de borrado falla con "Permission denied" y aborta todo el despliegue (detectado y corregido el 2026-08-24).
 
 ## 3-bis. Actualizar el backend (PythonAnywhere)
 
