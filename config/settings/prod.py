@@ -4,6 +4,7 @@ uses (see config/wsgi.py).
 """
 
 import os
+from urllib.parse import urlparse
 
 from .base import *  # noqa: F401,F403
 
@@ -47,6 +48,19 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").strip().lower() in (
 
 # Origin of the separately-built static frontend in production.
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN")
+
+# Without this, Django scopes the csrftoken cookie to the exact host that
+# set it (the backend's own subdomain), which makes it invisible to
+# document.cookie on the frontend's different subdomain - the frontend JS
+# can never read the token it's supposed to echo back in the X-CSRFToken
+# header, so every unsafe request made after Django rotates the token
+# (e.g. right after login) fails CSRF validation. Widening the cookie to
+# the shared parent domain (leading dot = also matches subdomains) fixes
+# that. Derived from FRONTEND_ORIGIN's last two domain labels rather than
+# hardcoded, e.g. "https://fundcorsrd.com" -> ".fundcorsrd.com".
+_frontend_host = urlparse(FRONTEND_ORIGIN).hostname if FRONTEND_ORIGIN else None
+if _frontend_host and "." in _frontend_host:
+    CSRF_COOKIE_DOMAIN = "." + ".".join(_frontend_host.split(".")[-2:])
 
 CORS_ALLOWED_ORIGINS = [FRONTEND_ORIGIN]
 CORS_ALLOW_CREDENTIALS = True
