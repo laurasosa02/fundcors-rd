@@ -2,6 +2,8 @@
 
 El sitio se despliega en dos partes: el **frontend** (sitio estático) va en la cuenta de Network Solutions del cliente; el **backend** (Django) vive en PythonAnywhere. Son dos hostings separados — cada uno se actualiza con su propio procedimiento (secciones 1-3 para el frontend en Network Solutions, sección 3-bis para el backend en PythonAnywhere).
 
+> **Nota:** las secciones 0-2 describen el plan original de montar el backend también en Network Solutions (un "Python App" ahí, con su propio subdominio). Eso quedó superado — el backend real corre en PythonAnywhere (sección 3-bis). Se dejan aquí como referencia por si algún día se vuelve a esa opción, pero para el despliegue actual solo hacen falta las secciones 3 (frontend) y 3-bis (backend).
+
 ## 0. Antes de empezar — verificar con Network Solutions
 
 Estos puntos no están confirmados desde este entorno de desarrollo y deben verificarse una sola vez, directamente en el panel de Network Solutions o con su soporte, antes del primer despliegue:
@@ -36,9 +38,9 @@ Estos puntos no están confirmados desde este entorno de desarrollo y deben veri
 
 Agregar en el panel de DNS de Network Solutions un registro para el subdominio del backend (ej. `api`) apuntando al mismo hosting. Network Solutions es al mismo tiempo el registrador del dominio y el hosting, así que esto se hace desde el mismo panel.
 
-## 3. Actualizar el sitio (`./scripts/deploy.sh`)
+## 3. Actualizar el frontend (`./scripts/deploy.sh`)
 
-Después de la configuración inicial, para publicar cambios:
+Este script sube **solo el frontend** a Network Solutions (el backend se actualiza aparte, ver sección 3-bis). Después de la configuración inicial, para publicar cambios:
 
 ```bash
 ./scripts/deploy.sh --dry-run   # primero: muestra qué subiría y qué borraría, sin tocar el servidor
@@ -48,11 +50,8 @@ Después de la configuración inicial, para publicar cambios:
 Este script:
 1. Compila el frontend (`npm run build` dentro de `frontend/`). Si la máquina no tiene Node instalado, reutiliza el `frontend/dist/` ya compilado, pero **solo** si ningún archivo de `frontend/src/` es más nuevo que él; si el build está desactualizado, se detiene en vez de publicar una versión vieja en silencio.
 2. Sube `frontend/dist/` por SFTP/FTP al `public_html` (o la carpeta que corresponda al dominio principal).
-3. Sube los archivos de `backend/` por SFTP/FTP a la carpeta de la app Python.
-4. Si hay acceso SSH configurado (ver variables al inicio del script), además ejecuta en el servidor `pip install -r requirements.txt`, `python manage.py migrate`, `python manage.py collectstatic`, y reinicia la app — en ese caso el flujo es realmente un solo comando.
-5. Si no hay SSH, esos últimos pasos hay que hacerlos manualmente por el panel de Network Solutions **solo cuando cambien las dependencias (`requirements.txt`) o los modelos de datos** — una actualización normal de contenido/frontend no los necesita.
 
-Los dos `mirror` van con `--delete`, es decir dejan la carpeta remota como copia exacta de la local: **todo lo que esté en esas rutas remotas y no en este repo se borra**. Por eso el script pide escribir `deploy` para confirmar antes de empezar, y por eso conviene pasar siempre primero por `--dry-run`.
+El `mirror` va con `--delete`, es decir deja la carpeta remota como copia exacta de la local: **todo lo que esté en esa ruta remota y no en este repo se borra** (con las excepciones explícitas de `.htaccess`, `mantenimiento.html`, `.membership` y `stats/`, que administra la propia plataforma de hosting — ver más abajo). Por eso el script pide escribir `deploy` para confirmar antes de empezar, y por eso conviene pasar siempre primero por `--dry-run`.
 
 Antes del primer uso, copiar `scripts/deploy.example.env` a `scripts/deploy.env` (no se sube a git) con las credenciales reales. La contraseña se puede dejar fuera del archivo: si `DEPLOY_FTP_PASS` no está definida, el script la pide al ejecutarse y así nunca queda escrita en disco.
 
@@ -61,7 +60,7 @@ Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por 
 ### Datos verificados de este servidor (2026-08-17)
 
 - **Host:** `ftp.fundcorsrd.com` (resuelve a `66.96.147.168`) — **puerto 2222**, protocolo SFTP. El puerto no es el 22 por defecto, así que hay que declararlo explícitamente (`DEPLOY_FTP_PORT=2222`).
-- El servidor se identifica como `SSH-2.0-ipage FTP Server`: es un endpoint **solo de transferencia de archivos, sin shell**. Por eso `DEPLOY_SSH_HOST` se deja vacío — no puede ejecutar `pip`/`migrate`/`collectstatic` remotamente, y esos pasos van por el panel.
+- El servidor se identifica como `SSH-2.0-ipage FTP Server`: es un endpoint **solo de transferencia de archivos, sin shell** (no habría podido ejecutar comandos remotos aunque el script lo intentara).
 - El servidor solo ofrece claves de host `ssh-rsa`/`ssh-dss`, que OpenSSH 8.8+ rechaza por defecto (falla con `no matching host key type found`). `deploy.sh` ya lo resuelve pasándole `-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa` únicamente a esta conexión, sin alterar la configuración SSH global de la máquina.
 - La raíz del sitio tiene un archivo `.membership` y una carpeta `stats/` (estadísticas de visitas tipo Webalizer) que genera y administra la propia plataforma de hosting — no son parte de este repo y la cuenta FTP no tiene permiso para borrarlos. `deploy.sh` los excluye explícitamente del espejado (`--exclude-glob .membership --exclude-glob stats/`) para que `mirror --delete` no intente tocarlos; sin esa exclusión, el intento de borrado falla con "Permission denied" y aborta todo el despliegue (detectado y corregido el 2026-08-24).
 

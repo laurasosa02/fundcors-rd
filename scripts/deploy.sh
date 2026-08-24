@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# One-command deploy for FUNDCORSRD to the Network Solutions hosting account.
+# One-command deploy for the FUNDCORSRD frontend to the Network Solutions
+# hosting account. Backend deploys are separate — see docs/deployment-guide.md
+# section "3-bis" (the backend lives on PythonAnywhere, updated via git pull).
 #
 # Does NOT assume the host supports git-based deployment (unconfirmed for
 # Network Solutions, which uses its own control panel rather than cPanel) —
 # uploads over FTP/SFTP instead, which works on any shared hosting account.
-# See docs/deployment-guide.md for the one-time setup this script assumes
-# is already done (Python App configured, env vars set on the host).
 #
 # Usage: ./scripts/deploy.sh [--dry-run]
 #   --dry-run  Connect and show exactly what would be uploaded/deleted,
@@ -34,10 +34,8 @@ source "$ENV_FILE"
 : "${DEPLOY_FTP_HOST:?Set DEPLOY_FTP_HOST in scripts/deploy.env}"
 : "${DEPLOY_FTP_USER:?Set DEPLOY_FTP_USER in scripts/deploy.env}"
 : "${DEPLOY_FRONTEND_REMOTE_PATH:?Set DEPLOY_FRONTEND_REMOTE_PATH in scripts/deploy.env}"
-: "${DEPLOY_BACKEND_REMOTE_PATH:?Set DEPLOY_BACKEND_REMOTE_PATH in scripts/deploy.env}"
 DEPLOY_FTP_PROTOCOL="${DEPLOY_FTP_PROTOCOL:-sftp}"
 DEPLOY_FTP_PORT="${DEPLOY_FTP_PORT:-}"
-DEPLOY_SSH_HOST="${DEPLOY_SSH_HOST:-}"
 
 # Password is deliberately optional in deploy.env: leaving it out keeps the
 # hosting password off disk entirely, and the script asks for it per run
@@ -91,13 +89,12 @@ else
 fi
 
 # --delete makes the remote an exact copy of the local directory, so anything
-# already living in those remote paths and not in this repo gets removed.
+# already living in that remote path and not in this repo gets removed.
 if [[ -z "$DRY_RUN" ]]; then
   echo
   echo "About to mirror onto $DEPLOY_FTP_HOST:"
   echo "  frontend/dist -> $DEPLOY_FRONTEND_REMOTE_PATH"
-  echo "  backend/      -> $DEPLOY_BACKEND_REMOTE_PATH"
-  echo "Files already in those remote folders that aren't in this repo WILL BE DELETED."
+  echo "Files already in that remote folder that aren't in this repo WILL BE DELETED."
   read -r -p "Type 'deploy' to continue: " CONFIRM
   [[ "$CONFIRM" == "deploy" ]] || { echo "Aborted."; exit 1; }
 fi
@@ -116,46 +113,9 @@ LFTP_SCRIPT
 echo "==> Uploading frontend/dist to $DEPLOY_FRONTEND_REMOTE_PATH"
 run_lftp "mirror --reverse --delete --verbose $DRY_RUN --exclude-glob .htaccess --exclude-glob mantenimiento.html --exclude-glob fundcorsrd-backend/ --exclude-glob .membership --exclude-glob stats/ \"$ROOT_DIR/frontend/dist\" \"$DEPLOY_FRONTEND_REMOTE_PATH\""
 
-echo "==> Uploading backend/ to $DEPLOY_BACKEND_REMOTE_PATH (excluding local-only files)"
-run_lftp "mirror --reverse --delete --verbose $DRY_RUN \
-      --exclude-glob .venv/ \
-      --exclude-glob venv/ \
-      --exclude-glob __pycache__/ \
-      --exclude-glob '*.pyc' \
-      --exclude-glob data/ \
-      --exclude-glob .env \
-      --exclude-glob staticfiles/ \
-      \"$ROOT_DIR/backend\" \"$DEPLOY_BACKEND_REMOTE_PATH\""
-
 if [[ -n "$DRY_RUN" ]]; then
   echo "==> Dry run: nothing was changed on the server. Re-run without --dry-run to deploy."
   exit 0
 fi
 
-if [[ -n "$DEPLOY_SSH_HOST" ]]; then
-  echo "==> SSH access configured — running install/migrate/collectstatic/restart remotely"
-  # shellcheck disable=SC2087
-  ssh "$DEPLOY_SSH_HOST" bash -s <<EOF
-set -euo pipefail
-cd "$DEPLOY_BACKEND_REMOTE_PATH"
-source venv/bin/activate 2>/dev/null || source .venv/bin/activate
-pip install -r requirements.txt
-python manage.py migrate --noinput
-python manage.py collectstatic --noinput
-touch tmp/restart.txt 2>/dev/null || echo "Note: couldn't touch tmp/restart.txt — restart the app manually from the Network Solutions panel if this host doesn't use that Passenger convention."
-EOF
-  echo "==> Done. Backend installed, migrated, and restarted."
-else
-  cat <<'MSG'
-==> No DEPLOY_SSH_HOST configured — files are uploaded, but these steps
-    still need to be done manually via the Network Solutions panel
-    (only required when requirements.txt or the data models changed,
-    not for a routine content/frontend update):
-      1. pip install -r requirements.txt
-      2. python manage.py migrate
-      3. python manage.py collectstatic --noinput
-      4. Restart the Python app (see docs/deployment-guide.md)
-MSG
-fi
-
-echo "==> Deploy finished."
+echo "==> Deploy finished. (Backend updates are separate — see docs/deployment-guide.md, section 3-bis, PythonAnywhere.)"
