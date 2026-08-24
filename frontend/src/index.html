@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Language" content="es">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FUNDCORSRD - Red de Estaciones CORS de Republica Dominicana</title>
 <link rel="icon" type="image/jpeg" href="assets/favicon.png">
@@ -285,7 +287,50 @@
   <div class="fcrd2-downloads" id="fcrd2Downloads" hidden>
     <div class="fcrd2-downloads-topbar">
       <p class="fcrd2-lead">Sesión activa. Seleccione el recurso que desea descargar.</p>
-      <button type="button" class="fcrd2-btn fcrd2-btn-ghost" id="fcrd2LogoutBtn">Cerrar sesión</button>
+      <div class="fcrd2-downloads-topbar-actions">
+        <button type="button" class="fcrd2-link-button" id="fcrd2ChangePasswordLink">Cambiar contraseña</button>
+        <button type="button" class="fcrd2-btn fcrd2-btn-ghost" id="fcrd2LogoutBtn">Cerrar sesión</button>
+      </div>
+    </div>
+    <div class="fcrd2-change-password-panel" id="fcrd2ChangePasswordPanel" hidden>
+      <p class="fcrd2-field-hint">Si iniciaste sesión con una contraseña temporal enviada por correo, puedes definir aquí la que prefieras usar de ahora en adelante.</p>
+      <form class="fcrd2-form-card" id="fcrd2ChangePasswordForm">
+        <div class="fcrd2-field">
+          <label for="fcrd2CurrentPassword">Contraseña actual</label>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2CurrentPassword" name="current_password" type="password" required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2NewPassword">Nueva contraseña</label>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2NewPassword" name="new_password" type="password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número." required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
+          <span class="fcrd2-field-hint">Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número.</span>
+        </div>
+        <div class="fcrd2-field">
+          <label for="fcrd2NewPasswordConfirm">Confirmar nueva contraseña</label>
+          <div class="fcrd2-password-wrap">
+            <input id="fcrd2NewPasswordConfirm" name="new_password_confirm" type="password" minlength="8" required>
+            <button type="button" class="fcrd2-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg class="fcrd2-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="fcrd2-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.75 21.75 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
+        </div>
+        <div class="fcrd2-form-actions">
+          <button type="submit" class="fcrd2-btn fcrd2-btn-outline">Guardar nueva contraseña</button>
+        </div>
+        <p class="fcrd2-form-msg" id="fcrd2ChangePasswordMsg" role="alert"></p>
+      </form>
     </div>
     <div class="fcrd2-download-list">
       <div class="fcrd2-download-row">

@@ -24,6 +24,9 @@
 
 .fcrd2-downloads{display:flex;flex-direction:column;gap:20px;}
 .fcrd2-downloads-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.fcrd2-downloads-topbar-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+
+.fcrd2-change-password-panel{padding:20px 0;border-top:1px solid var(--silver-soft);border-bottom:1px solid var(--silver-soft);display:flex;flex-direction:column;gap:14px;}
 
 .fcrd2-download-list{display:flex;flex-direction:column;overflow:hidden;border:none;border-top:1px solid var(--silver-soft);border-radius:0;background:none;}
 .fcrd2-download-row{display:flex;align-items:center;gap:18px;padding:20px 22px;background:none;border-bottom:1px solid var(--silver-soft);border-radius:0;transition:background 150ms var(--ease);}

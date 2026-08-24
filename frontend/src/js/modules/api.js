@@ -92,9 +92,18 @@ export async function apiFetch(path, options = {}) {
   let finalBody = body;
 
   if (CSRF_UNSAFE_METHODS.includes(normalizedMethod)) {
+    // ensureCsrf() guarantees the cookie has been set at least once, but
+    // the actual header value is re-read from the live cookie on every
+    // call rather than trusting the value cached back when ensureCsrf()
+    // first ran - Django rotates the csrftoken cookie around login, so a
+    // value cached before login is stale for any request made after it
+    // (e.g. change-password, which happens once already logged in). The
+    // module-level csrfToken is only a fallback for the rare case the
+    // cookie itself can't be read.
     await ensureCsrf();
-    if (csrfToken) {
-      finalHeaders.set(CSRF_HEADER_NAME, csrfToken);
+    const currentToken = getCookie(CSRF_COOKIE_NAME) || csrfToken;
+    if (currentToken) {
+      finalHeaders.set(CSRF_HEADER_NAME, currentToken);
     }
   }
 

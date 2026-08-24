@@ -10,6 +10,6 @@
 .fcrd2-faq-item.open .fcrd2-faq-q svg{transform:rotate(45deg);}
 .fcrd2-faq-a{max-height:0;overflow:hidden;transition:max-height 220ms var(--ease);}
 .fcrd2-faq-item.open .fcrd2-faq-a{max-height:400px;}
-.fcrd2-faq-a-inner{padding:0 4px 22px;font-family:var(--font-body);font-size:15px;line-height:1.75;color:var(--carbon-soft);max-width:700px;text-align:justify;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;}
+.fcrd2-faq-a-inner{padding:0 4px 22px;font-family:var(--font-body);font-size:15px;line-height:1.75;color:var(--carbon-soft);max-width:700px;text-align:justify;overflow-wrap:break-word;}
 .fcrd2-faq-a-inner strong{color:var(--carbon);font-weight:600;}
 .fcrd2-faq-a-inner .mono-price{font-family:var(--font-mono);font-weight:600;color:var(--green-dark);}

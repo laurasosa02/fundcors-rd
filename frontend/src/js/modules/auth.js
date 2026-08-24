@@ -55,8 +55,9 @@ export async function initAuth() {
   const logoutBtn = document.getElementById('fcrd2LogoutBtn');
 
   initTabs(authCard);
-  initPasswordToggles(authCard);
+  initPasswordToggles();
   initForgotPassword();
+  initChangePassword();
 
   if (loginForm) {
     loginForm.addEventListener('submit', (event) => {
@@ -80,16 +81,16 @@ export async function initAuth() {
 }
 
 /**
- * Wires every "show/hide password" eye button within authCard: each one
+ * Wires every "show/hide password" eye button on the page: each one
  * toggles the type (password/text) of the password input it sits next to
  * inside its shared .fcrd2-password-wrap, and swaps the eye/eye-off icon
- * plus the button's accessible label to match the current state.
- * @param {HTMLElement|null} authCard
+ * plus the button's accessible label to match the current state. Not
+ * scoped to a single container since these buttons live in three
+ * separate places (the login/register forms in fcrd2AuthCard, and the
+ * change-password form inside fcrd2Downloads).
  */
-function initPasswordToggles(authCard) {
-  if (!authCard) return;
-
-  const toggles = Array.from(authCard.querySelectorAll('.fcrd2-password-toggle'));
+function initPasswordToggles() {
+  const toggles = Array.from(document.querySelectorAll('.fcrd2-password-toggle'));
   toggles.forEach((toggle) => {
     const wrap = toggle.closest('.fcrd2-password-wrap');
     const input = wrap ? wrap.querySelector('input') : null;
@@ -161,6 +162,76 @@ async function handleForgotPassword(event, form) {
   // else (e.g. a malformed request) falls back to the generic message.
   setMessage(msgEl, (data && data.message) || GENERIC_ERROR_MSG);
   if (status === 200) form.reset();
+}
+
+/**
+ * Wires the "Cambiar contraseña" link (in the logged-in downloads view)
+ * to reveal an inline form letting the user set their own password -
+ * the natural follow-up once they've logged in with a temporary one
+ * from forgot_password_view.
+ */
+function initChangePassword() {
+  const link = document.getElementById('fcrd2ChangePasswordLink');
+  const panel = document.getElementById('fcrd2ChangePasswordPanel');
+  const form = document.getElementById('fcrd2ChangePasswordForm');
+  if (!link || !panel) return;
+
+  link.addEventListener('click', () => {
+    panel.hidden = !panel.hidden;
+  });
+
+  if (form) {
+    form.addEventListener('submit', (event) => {
+      handleChangePassword(event, form);
+    });
+  }
+}
+
+/**
+ * @param {SubmitEvent} event
+ * @param {HTMLFormElement} form
+ */
+async function handleChangePassword(event, form) {
+  event.preventDefault();
+  const msgEl = document.getElementById('fcrd2ChangePasswordMsg');
+  const fields = form.elements;
+
+  const newPassword = fields.new_password.value;
+  const newPasswordConfirm = fields.new_password_confirm.value;
+
+  if (newPassword !== newPasswordConfirm) {
+    setMessage(msgEl, PASSWORD_MISMATCH_MSG);
+    return;
+  }
+
+  const body = {
+    current_password: fields.current_password.value,
+    new_password: newPassword,
+    new_password_confirm: newPasswordConfirm,
+  };
+
+  let result;
+  try {
+    result = await apiFetch('/auth/change-password/', { method: 'POST', body });
+  } catch (err) {
+    setMessage(msgEl, GENERIC_ERROR_MSG);
+    return;
+  }
+
+  const { status, data } = result;
+
+  if (status === 200) {
+    setMessage(msgEl, (data && data.message) || 'Contraseña actualizada correctamente.');
+    form.reset();
+    return;
+  }
+
+  if (status === 400 && data && data.errors) {
+    setMessage(msgEl, firstErrorMessage(data.errors));
+    return;
+  }
+
+  setMessage(msgEl, GENERIC_ERROR_MSG);
 }
 
 /**
