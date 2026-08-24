@@ -10,7 +10,7 @@ import certifi
 from django_ratelimit.decorators import ratelimit
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import send_mail
@@ -418,6 +418,63 @@ def forgot_password_view(request):
         _send_temp_password_email(user, new_password)
 
     return JsonResponse({"message": _FORGOT_PASSWORD_GENERIC_MESSAGE})
+
+
+@require_POST
+def change_password_view(request):
+    """Lets a logged-in user set their own password - the natural
+    follow-up to forgot_password_view, which can only ever hand out a
+    random temporary one. Requires the current password (so a session
+    left open on a shared/unlocked device can't be used to permanently
+    lock the real owner out) and re-runs the same complexity rules as
+    registration via validate_password.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Debes iniciar sesion."}, status=401)
+
+    data, error_response = _parse_json_body(request)
+    if error_response is not None:
+        return error_response
+
+    current_password = data.get("current_password", "")
+    new_password = data.get("new_password", "")
+    new_password_confirm = data.get("new_password_confirm", "")
+
+    errors = {}
+
+    if not request.user.check_password(current_password):
+        errors.setdefault("current_password", []).append(
+            "La contrasena actual no es correcta."
+        )
+
+    if isinstance(new_password, str) and new_password:
+        try:
+            validate_password(new_password, user=request.user)
+        except DjangoValidationError as exc:
+            for message in exc.messages:
+                errors.setdefault("new_password", []).append(message)
+    else:
+        errors.setdefault("new_password", []).append("Este campo es obligatorio.")
+
+    if new_password != new_password_confirm:
+        errors.setdefault("new_password_confirm", []).append(
+            "Las contrasenas no coinciden."
+        )
+
+    if errors:
+        return JsonResponse({"errors": errors}, status=400)
+
+    request.user.set_password(new_password)
+    request.user.save(update_fields=["password"])
+    # Without this, changing the password invalidates the session auth
+    # hash Django stamped into the current session, silently logging the
+    # user out on their very next request even though the change itself
+    # succeeded - this keeps the current session valid while still
+    # invalidating any *other* session logged in as this user, which is
+    # the correct/expected behavior for a password change.
+    update_session_auth_hash(request, request.user)
+
+    return JsonResponse({"message": "Contrasena actualizada correctamente."})
 
 
 @require_POST
