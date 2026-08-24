@@ -68,9 +68,22 @@ Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por 
 
 El backend está en una cuenta de PythonAnywhere de pago (plan Hacker o superior), subido ahí manualmente (no como clon de git). Esto se puede convertir a un clon de git **una sola vez**, y a partir de ahí cada actualización se reduce a un `git pull`.
 
+### Conectarse por SSH
+
+Con un plan de pago hay acceso SSH desde tu propia terminal (además de la consola Bash del navegador). El host depende de en cuál sitio de PythonAnywhere te registraste:
+
+- `www.pythonanywhere.com` (global/EE.UU.) → `ssh <tu-usuario>@ssh.pythonanywhere.com`
+- `eu.pythonanywhere.com` (Europa) → `ssh <tu-usuario>@ssh.eu.pythonanywhere.com`
+
+```bash
+ssh TU_USUARIO@ssh.pythonanywhere.com   # o ssh.eu.pythonanywhere.com si te registraste en el sitio europeo
+```
+
+La primera vez pedirá confirmar la huella (fingerprint) del servidor — para esta cuenta es `SHA256:zy2jmqxNg/fs6tFZK55OjHTI3B2UofzOiUvTPtcX3/Y`, así que si coincide es seguro escribir `yes`.
+
 ### Paso único: convertir la carpeta actual en un clon de git
 
-Desde la consola Bash de PythonAnywhere (o por SSH, si la usas desde tu propia terminal — con un plan de pago tienes acceso SSH; el host y las instrucciones exactas están en la pestaña **Account → SSH access** del panel):
+Ya conectado (por SSH o desde la consola Bash del panel):
 
 ```bash
 cd ~/ruta-a-tu-carpeta-del-backend   # confirma la ruta real con: ls ~ y con la pestaña "Web" del panel (Source code / Working directory)
