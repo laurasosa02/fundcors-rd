@@ -62,6 +62,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
+    # Must be first: corrects REMOTE_ADDR from X-Forwarded-For before
+    # anything else (axes, ratelimit, reCAPTCHA) reads it - see
+    # core/middleware.py for why this is necessary on PythonAnywhere.
+    "core.middleware.RealIpMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Must sit immediately after SecurityMiddleware per whitenoise docs.
     "whitenoise.middleware.WhiteNoiseMiddleware",
