@@ -27,11 +27,10 @@ export const CSRF_HEADER_NAME = 'X-CSRFToken';
 // matching secret key must stay server-side (see the backend's
 // RECAPTCHA_SECRET_KEY setting).
 //
-// This is Google's published TEST site key, which always passes
-// verification and is explicitly documented as "use only for testing,
-// never in production" (https://developers.google.com/recaptcha/docs/faq).
-// Swap this for the real site key issued at
-// https://www.google.com/recaptcha/admin for the real production domain
-// before deploying — until then, registration has zero real bot
-// protection even though the checkbox appears to work.
+// This is the real production site key for fundcorsrd.com, issued at
+// https://www.google.com/recaptcha/admin (swapped in from Google's public
+// test key on 2026-08-20 — see that commit for the prior test-key value).
+// The matching RECAPTCHA_SECRET_KEY must be set as a real environment
+// variable wherever config.settings.prod actually runs; without it,
+// registration fails closed rather than silently accepting no protection.
 export const RECAPTCHA_SITE_KEY = '6LeCI40tAAAAAN-qNHx-ziQoAX-lwoTkUnpw5CeQ';
