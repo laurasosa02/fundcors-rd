@@ -498,13 +498,19 @@ def me_view(request):
 
 def _invalid_link_response():
     return HttpResponse(
-        "<p>Enlace inválido o expirado</p>", status=400, content_type="text/html"
+        "<!doctype html><html><head><meta charset=\"utf-8\"></head>"
+        "<body><p>Enlace inválido o expirado</p></body></html>",
+        status=400,
+        content_type="text/html; charset=utf-8",
     )
 
 
 def _user_not_found_response():
     return HttpResponse(
-        "<p>Usuario no encontrado</p>", status=404, content_type="text/html"
+        "<!doctype html><html><head><meta charset=\"utf-8\"></head>"
+        "<body><p>Usuario no encontrado</p></body></html>",
+        status=404,
+        content_type="text/html; charset=utf-8",
     )
 
 
@@ -521,7 +527,7 @@ def _confirm_form_response(request, token, question_html):
     """
     csrf_token = get_token(request)
     return HttpResponse(
-        "<!doctype html><html><body>"
+        "<!doctype html><html><head><meta charset=\"utf-8\"></head><body>"
         f"<p>{question_html}</p>"
         f'<form method="post">'
         f'<input type="hidden" name="csrfmiddlewaretoken" value="{escape(csrf_token)}">'
@@ -529,7 +535,7 @@ def _confirm_form_response(request, token, question_html):
         f'<button type="submit">Confirmar</button>'
         f"</form>"
         "</body></html>",
-        content_type="text/html",
+        content_type="text/html; charset=utf-8",
     )
 
 
@@ -573,9 +579,9 @@ def verify_email_view(request):
         activation_message = "Tu cuenta ya está activa. Ya puedes iniciar sesión."
 
     return HttpResponse(
-        "<!doctype html><html><body>"
+        "<!doctype html><html><head><meta charset=\"utf-8\"></head><body>"
         f"<p>Correo verificado para <strong>{escape(user.email)}</strong>. "
         f"{activation_message}</p>"
         "</body></html>",
-        content_type="text/html",
+        content_type="text/html; charset=utf-8",
     )
