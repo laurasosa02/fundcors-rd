@@ -15,7 +15,7 @@ footer{scroll-margin-top:121px;}
 /* ---------- Section shell ---------- */
 .fcrd2-section{
   max-width:760px;margin:0 auto;
-  padding:70px 40px;
+  padding:48px 40px;
   display:flex;flex-direction:column;gap:30px;
   border-top:1px solid var(--silver-soft);
   position:relative;
@@ -92,8 +92,21 @@ footer{scroll-margin-top:121px;}
 /* Everything except the photo itself is lifted above it. A positioned
    element with z-index:0 paints above the inline content of static
    siblings, so the content genuinely needs its own stacking position
-   here - without this the photo would cover the text. */
-.fcrd2-section.photo > *:not(.fcrd2-section-bg){position:relative;z-index:1;}
+   here - without this the photo would cover the text.
+
+   .fcrd2-bg-dot and .fcrd2-section-top are ALSO excluded, not just the
+   photo: both already manage their own position:absolute (and their own
+   z-index) in their own class rules, and this selector's two classes
+   (.fcrd2-section.photo) outrank their single class, so without the
+   exclusion this silently forced them from absolute to relative -
+   pulling a 150-260px decorative circle (and the 36px back-to-top
+   chip) into normal document flow as if it were real content. That
+   turned into a large, unexplained gap before this section's own
+   heading on every "photo" section (Quiénes somos, FAQ, Acceso) -
+   found by literally measuring getBoundingClientRect() to track down
+   where an ~260px gap that no padding value accounted for was coming
+   from. */
+.fcrd2-section.photo > *:not(.fcrd2-section-bg):not(.fcrd2-bg-dot):not(.fcrd2-section-top){position:relative;z-index:1;}
 
 /* ---------- Quiénes somos: directiva photo (below Misión/Visión) ---------- */
 /* width:100%;height:auto (no object-fit:cover, no fixed aspect-ratio
@@ -116,7 +129,12 @@ footer{scroll-margin-top:121px;}
 .fcrd2-grid-2{display:grid;grid-template-columns:1fr;gap:26px;}
 .fcrd2-grid-2 > div{display:flex;flex-direction:column;gap:14px;}
 .fcrd2-grid-2 h3{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--carbon);border-top:none;border-left:2px solid var(--green);padding-top:0;padding-left:14px;width:fit-content;}
-.fcrd2-grid-2 p{font-family:var(--font-body);font-size:15.5px;line-height:1.75;color:var(--carbon-soft);text-align:justify;overflow-wrap:break-word;}
+/* Same max-width as .fcrd2-lead (see the eyebrow/heading comment
+   earlier in this file) - without a cap here, Misión/Visión stretched
+   to the section's full width on large monitors while the intro
+   paragraph above stayed at 680px, so the justified text visibly
+   wrapped at two different measures within the same section. */
+.fcrd2-grid-2 p{font-family:var(--font-body);font-size:15.5px;line-height:1.75;color:var(--carbon-soft);text-align:justify;overflow-wrap:break-word;max-width:680px;}
 
 /* ---------- Decorative corner brackets (editorial motif) ---------- */
 .fcrd2-section::before,.fcrd2-section::after,
@@ -167,7 +185,7 @@ footer{scroll-margin-top:121px;}
    components/hero.css; the section shell and the hero inner column keep
    the same gutter at each step so body copy lines up between them. */
 @media (max-width:1024px){
-  .fcrd2-section{padding:60px 56px;}
+  .fcrd2-section{padding:40px 56px;}
 }
 
 @media (max-width:850px){
@@ -178,10 +196,10 @@ footer{scroll-margin-top:121px;}
   .fcrd2-section-top{bottom:14px;right:14px;width:32px;height:32px;opacity:0.55;}
   .fcrd2-section::before,.fcrd2-section::after,
   .fcrd2-hero-inner::before,.fcrd2-hero-inner::after{display:none;}
-  .fcrd2-section{padding:50px 40px;}
+  .fcrd2-section{padding:36px 40px;}
 }
 
 @media (max-width:420px){
-  .fcrd2-section{padding:40px 28px;}
+  .fcrd2-section{padding:32px 28px;}
   .fcrd2-h2{font-size:22px;}
 }
