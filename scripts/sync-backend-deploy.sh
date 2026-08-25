@@ -37,6 +37,12 @@ WT_DIR="$TMP_PARENT/backend-deploy-wt"
 BRANCH="backend-deploy-sync-$$"
 
 cleanup() {
+  # cd out of $WT_DIR first - the trap can fire while it's still the shell's
+  # cwd (e.g. after the early "already up to date" exit below), and removing
+  # a worktree out from under the shell's own cwd left both the worktree
+  # removal and the branch delete silently failing (masked by `|| true`),
+  # leaking a stray local branch on every run.
+  cd "$ROOT_DIR"
   git worktree remove "$WT_DIR" --force >/dev/null 2>&1 || true
   git branch -D "$BRANCH" >/dev/null 2>&1 || true
   rm -rf "$TMP_PARENT" 2>/dev/null || true
