@@ -6,42 +6,125 @@
   which pinned them to one fixed set of values at every viewport — that
   worked fine down to tablet width, but the unscaled 4-column stats grid
   in particular became too cramped to read on real phones).
+
+  Background image: .fcrd2-hero (the <section> itself) is full-bleed
+  (no max-width) so the photo spans edge-to-edge instead of being boxed
+  in by the centered content column - the actual content lives in the
+  nested .fcrd2-hero-inner, which carries the max-width/padding/centering
+  that used to live directly on .fcrd2-hero.
+
+  background-size:100% auto (not cover) is deliberate: the source photo
+  is shown in full, at every viewport width, with zero cropping - cover
+  would always crop *something* whenever the container's aspect ratio
+  doesn't exactly match the photo's own, which is true at almost every
+  real viewport size. Full-width sizing means the rendered height
+  varies with viewport width (min-height below, matching the photo's
+  own 941/1672 aspect ratio, keeps the section at least that tall so
+  overflow:hidden never has to crop it either) - on very narrow mobile
+  widths the photo just renders shorter, still showing 100% of it, only
+  more zoomed out.
 */
 
-.fcrd2-hero{max-width:760px;margin:0 auto;padding:55px 40px 80px;display:flex;flex-direction:column;align-items:flex-start;gap:26px;background-color:#ffffff;position:relative;overflow:hidden;}
+/* The photo lives on ::before, not on .fcrd2-hero itself, specifically
+   so it can fade out on its own via mask-image without also fading the
+   real content (h1/p/buttons/stats) - mask-image affects an element's
+   entire paint including children, so masking .fcrd2-hero directly
+   would incorrectly fade the text too. .fcrd2-hero itself is left with
+   no background of its own, so wherever ::before's mask fades it to
+   transparent, the body gradient underneath (see base.css) shows
+   through directly - guaranteed to be the exact right color to
+   continue into, since it's the same gradient the next section itself
+   sits on, rather than an approximated solid color that could mismatch
+   it right at the seam. */
+.fcrd2-hero{width:100%;min-height:56.3vw;position:relative;overflow:hidden;}
+.fcrd2-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:url(../assets/hero-bg.jpg);
+  background-size:100% auto;
+  background-position:right top;
+  background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+  mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+}
+
+
+/* Narrow viewports (phone, tablet, reduced window): here the hero box is
+   much taller than the photo's own 56.3vw natural height, because the
+   stacked h1 / paragraph / CTAs / stats make the content column tall.
+   With background-size:100% auto the photo therefore stopped partway
+   down the section and ended on a hard horizontal edge, while the mask's
+   fade - which is positioned relative to the *box*, not to the image -
+   happened several hundred pixels further down over empty space, so it
+   never actually softened anything. (Same failure mode the #acceso
+   banner originally had; see layout.css.)
+
+   So at these widths the photo switches to `cover`: it fills the section
+   for real, which puts the bottom of the mask over actual pixels and
+   lets the hero dissolve into the following section instead of being
+   cut off mid-way. `cover` crops, which is the right trade here -
+   anchoring at `left top` deliberately pushes the CORS antenna and
+   tripod (they sit on the right-hand side of the photo) out of frame,
+   because at this width they landed directly behind the paragraph and
+   hurt its legibility. What stays in frame is the soft dotted gradient
+   down the photo's left edge, which text reads cleanly over. */
+@media (max-width:1024px){
+  .fcrd2-hero::before{
+    background-size:cover;
+    background-position:left top;
+    -webkit-mask-image:linear-gradient(to bottom, black 0%, black 40%, transparent 97%);
+    mask-image:linear-gradient(to bottom, black 0%, black 40%, transparent 97%);
+  }
+}
+
+.fcrd2-hero-inner{max-width:760px;margin:0 auto;padding:55px 40px 80px;display:flex;flex-direction:column;align-items:flex-start;gap:26px;position:relative;z-index:1;}
 
 /* Kept in sync with .fcrd2-section's own large-screen widening in
    layout.css — same reasoning: narrower empty side margins on big
    monitors, without stretching the actual reading width of h1/p (those
    keep their own max-width caps below). */
 @media (min-width:1440px){
-  .fcrd2-hero{max-width:980px;}
+  .fcrd2-hero-inner{max-width:1100px;}
 }
 @media (min-width:1800px){
-  .fcrd2-hero{max-width:1120px;}
+  .fcrd2-hero-inner{max-width:1300px;}
 }
 
 .fcrd2-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green-dark);background:none;border:1px solid var(--green);border-radius:var(--radius-full);padding:5px 12px;}
 .fcrd2-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
 
-.fcrd2-hero h1{font-family:var(--font-display);font-weight:700;font-size:42px;line-height:1.2;letter-spacing:-0.015em;max-width:760px;color:var(--carbon);}
+/* Same max-width as .fcrd2-hero p below - on wide monitors, capping only
+   the paragraph left the heading free to stretch far wider than it,
+   which read as one long line sitting above a much narrower justified
+   block instead of one aligned column. */
+.fcrd2-hero h1{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.2;letter-spacing:-0.015em;max-width:640px;color:var(--carbon);}
 .fcrd2-hero p{font-family:var(--font-body);font-size:17px;line-height:1.85;color:var(--carbon-soft);max-width:640px;text-align:justify;overflow-wrap:break-word;}
 .fcrd2-hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
 
-.fcrd2-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-top:44px;padding-top:0;border-top:none;border-left:1px solid var(--silver-soft);width:100%;max-width:100%;}
+.fcrd2-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:44px;padding-top:0;border-top:none;border-left:1px solid var(--silver-soft);width:100%;max-width:100%;}
 .fcrd2-stats > div{padding:0 20px;border-right:1px solid var(--silver-soft);}
-.fcrd2-stat-num{font-family:var(--font-mono);font-weight:600;font-size:24px;color:var(--carbon);border-top:none;padding-top:0;display:inline-block;}
+.fcrd2-stat-num{font-family:var(--font-mono);font-weight:600;font-size:24px;color:#0f5230;border-top:none;padding-top:0;display:inline-block;}
 .fcrd2-stat-label{font-family:var(--font-body);font-size:13px;color:var(--carbon-soft);margin-top:4px;}
 
+/* Wider side gutters below desktop. The single 40px gutter inherited
+   from the desktop layout left body copy sitting almost against the
+   screen edge on tablets and reduced windows; these steps back the text
+   off the edges as the viewport narrows. Declared after the base
+   .fcrd2-hero-inner rule on purpose - a media query adds no specificity,
+   so an earlier block would simply lose to it. */
+@media (max-width:1024px){
+  .fcrd2-hero-inner{padding:50px 56px 72px;}
+}
+
 @media (max-width:700px){
-  .fcrd2-hero{padding:44px 24px 60px;}
-  .fcrd2-hero h1{font-size:32px;}
+  .fcrd2-hero-inner{padding:44px 40px 60px;}
   .fcrd2-hero p{font-size:16px;}
   .fcrd2-stats{grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-top:32px;}
   .fcrd2-stats > div{padding:0 12px;}
 }
 
 @media (max-width:420px){
-  .fcrd2-hero{padding:36px 20px 48px;}
-  .fcrd2-hero h1{font-size:26px;}
+  .fcrd2-hero-inner{padding:36px 28px 48px;}
+  .fcrd2-hero h1{font-size:22px;}
 }

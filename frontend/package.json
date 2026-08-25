@@ -4,7 +4,7 @@
   "private": true,
   "description": "Static frontend build tooling for the FUNDCORSRD site.",
   "scripts": {
-    "build:css": "esbuild src/css/main.css --bundle --minify --outfile=dist/css/main.min.css",
+    "build:css": "esbuild src/css/main.css --bundle --minify --outfile=dist/css/main.min.css --external:../assets/*",
     "build:js": "esbuild src/js/main.js --bundle --minify --format=esm --outfile=dist/js/main.min.js",
     "build:copy": "node scripts/build-copy.mjs",
     "build": "npm run build:css && npm run build:js && npm run build:copy",

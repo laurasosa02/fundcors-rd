@@ -19,11 +19,11 @@
 
 .fcrd2-nav{display:flex;align-items:center;gap:18px;margin-left:auto;margin-right:28px;}
 
-.fcrd2-link{font-family:var(--font-display);font-weight:600;font-size:11.5px;letter-spacing:0.01em;text-transform:uppercase;color:var(--green-dark);padding:6px 0;border-bottom:2px solid transparent;transition:color 150ms var(--ease),border-color 150ms var(--ease);}
+.fcrd2-link{font-family:var(--font-display);font-weight:600;font-size:14px;letter-spacing:0.01em;text-transform:uppercase;color:var(--green-dark);padding:6px 0;border-bottom:2px solid transparent;transition:color 150ms var(--ease),border-color 150ms var(--ease);}
 .fcrd2-link:hover{color:var(--green);border-color:var(--green);}
 
 .fcrd2-dd{position:relative;}
-.fcrd2-dd-btn{display:flex;align-items:center;gap:5px;background:none;border:none;font-family:var(--font-display);font-weight:600;font-size:11.5px;letter-spacing:0.01em;text-transform:uppercase;color:var(--green-dark);cursor:pointer;padding:6px 0;}
+.fcrd2-dd-btn{display:flex;align-items:center;gap:5px;background:none;border:none;font-family:var(--font-display);font-weight:600;font-size:14px;letter-spacing:0.01em;text-transform:uppercase;color:var(--green-dark);cursor:pointer;padding:6px 0;}
 .fcrd2-dd-btn svg{transition:transform 150ms var(--ease);}
 .fcrd2-dd.open .fcrd2-dd-btn svg{transform:rotate(180deg);}
 .fcrd2-dd-menu{position:absolute;top:100%;right:0;margin-top:10px;background:var(--white);border:1px solid var(--silver);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:230px;padding:6px;display:none;flex-direction:column;}

@@ -27,7 +27,7 @@ def _parse_json_body(request):
     try:
         data = json.loads(request.body)
     except (json.JSONDecodeError, UnicodeDecodeError):
-        return None, JsonResponse({"message": "JSON invalido"}, status=400)
+        return None, JsonResponse({"message": "JSON inválido"}, status=400)
     if not isinstance(data, dict):
         data = {}
     return data, None
@@ -51,7 +51,7 @@ def _validate_inscripcion(data):
     if not isinstance(cedula, str) or not cedula.strip():
         add_error("cedula", "Este campo es obligatorio.")
     elif not CEDULA_RE.match(cedula.strip()):
-        add_error("cedula", "La cedula no es valida.")
+        add_error("cedula", "La cédula no es válida.")
 
     telefono = data.get("telefono")
     if not isinstance(telefono, str) or not telefono.strip():
@@ -64,17 +64,17 @@ def _validate_inscripcion(data):
         correo_value = correo.strip()
         at_index = correo_value.find("@")
         if at_index == -1 or "." not in correo_value[at_index:]:
-            add_error("correo", "El correo electronico no es valido.")
+            add_error("correo", "El correo electrónico no es válido.")
 
     return errors
 
 
 def _send_admin_inscripcion_email(inscripcion):
     message = (
-        "Nueva solicitud de inscripcion en el portal de FUNDCORSRD.\n\n"
+        "Nueva solicitud de inscripción en el portal de FUNDCORSRD.\n\n"
         f"Nombre: {inscripcion.nombre}\n"
-        f"Cedula: {inscripcion.cedula}\n"
-        f"Telefono: {inscripcion.telefono}\n"
+        f"Cédula: {inscripcion.cedula}\n"
+        f"Teléfono: {inscripcion.telefono}\n"
         f"Correo: {inscripcion.correo}\n"
     )
 
@@ -82,7 +82,7 @@ def _send_admin_inscripcion_email(inscripcion):
     # so this is fail_silently. If it does fail, log it rather than
     # swallowing it without a trace.
     sent = send_mail(
-        subject="Nueva solicitud de inscripcion - FUNDCORSRD",
+        subject="Nueva solicitud de inscripción - FUNDCORSRD",
         message=message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
@@ -117,5 +117,5 @@ def inscripcion_view(request):
     _send_admin_inscripcion_email(inscripcion)
 
     return JsonResponse(
-        {"message": "Solicitud de inscripcion recibida"}, status=201
+        {"message": "Solicitud de inscripción recibida"}, status=201
     )

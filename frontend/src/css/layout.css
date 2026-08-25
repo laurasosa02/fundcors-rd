@@ -22,6 +22,11 @@ footer{scroll-margin-top:121px;}
 }
 .fcrd2-section.alt{background:none;}
 
+/* No hard divider right after the hero - its photo now fades into this
+   section's background instead of cutting off at a line (see the
+   mask-image comment on .fcrd2-hero in hero.css). */
+.fcrd2-hero + section.fcrd2-section{border-top:none;}
+
 /* On large monitors, 760px leaves a lot of empty side margin either side
    of the centered content. Widening the section (and .fcrd2-hero, see
    hero.css) at these breakpoints narrows those empty columns without
@@ -30,15 +35,82 @@ footer{scroll-margin-top:121px;}
    purpose — body copy line length shouldn't grow with screen width just
    because there's more room, only the overall page margins should. */
 @media (min-width:1440px){
-  .fcrd2-section{max-width:980px;}
+  .fcrd2-section{max-width:1100px;}
 }
 @media (min-width:1800px){
-  .fcrd2-section{max-width:1120px;}
+  .fcrd2-section{max-width:1300px;}
 }
 
-.fcrd2-eyebrow{font-family:var(--font-display);font-weight:600;font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);}
-.fcrd2-h2{font-family:var(--font-display);font-weight:700;font-size:26px;margin-top:10px;margin-bottom:14px;color:var(--carbon);max-width:100%;letter-spacing:-0.01em;}
+/* Same pill treatment as .fcrd2-pill (the "Red GNSS activa" hero badge,
+   see hero.css) so every section's opening title reads as one consistent
+   motif across the page. */
+.fcrd2-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green-dark);background:none;border:1px solid var(--green);border-radius:var(--radius-full);padding:5px 12px;}
+.fcrd2-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+/* Same max-width as .fcrd2-lead below - see the matching comment on
+   .fcrd2-hero h1 in hero.css for why the two need to match. */
+.fcrd2-h2{font-family:var(--font-display);font-weight:700;font-size:26px;margin-top:20px;margin-bottom:26px;color:var(--carbon);max-width:680px;letter-spacing:-0.01em;}
 .fcrd2-lead{font-family:var(--font-body);font-size:15.5px;color:var(--carbon-soft);max-width:680px;line-height:1.7;text-align:justify;overflow-wrap:break-word;}
+
+/* ---------- Sections carrying the photo background (.fcrd2-section.photo) ---------- */
+/* Used by #quienes-somos, #faq and #acceso. The photo is the *background
+   of the section*, not a banner stacked above it: the section keeps its
+   normal padding, so the eyebrow, heading and cards render directly over
+   the image instead of starting below it.
+
+   The image lives on a dedicated .fcrd2-section-bg div rather than on a
+   ::before, because .fcrd2-section::before is already spoken for - it
+   draws the top-left corner bracket (see the decoration block above) -
+   and a photo there would silently delete that bracket. A real element
+   also matches how this page already handles decoration (.fcrd2-bg-dot).
+
+   The div is full-bleed (100vw) and exactly 50vw tall, which is
+   secciones-bg.png's own aspect ratio (887/1774 = 0.4999), so
+   background-size:100% 100% paints the complete image with zero cropping
+   AND zero distortion.
+
+   The mask fades the image in from transparent at the top, so it emerges
+   out of whatever precedes it rather than beginning on a line, and back
+   out to transparent at the bottom, so it dissolves into the page
+   gradient instead of ending on a hard horizontal edge. border-top is
+   dropped for the same reason. */
+.fcrd2-section.photo{border-top:none;}
+.fcrd2-section-bg{
+  position:absolute;
+  left:50%;right:50%;
+  margin-left:-50vw;margin-right:-50vw;
+  width:100vw;
+  top:0;
+  height:50vw;
+  background-image:url(../assets/secciones-bg.png);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 22%, black 58%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, black 22%, black 58%, transparent 100%);
+  z-index:0;
+  pointer-events:none;
+}
+/* Everything except the photo itself is lifted above it. A positioned
+   element with z-index:0 paints above the inline content of static
+   siblings, so the content genuinely needs its own stacking position
+   here - without this the photo would cover the text. */
+.fcrd2-section.photo > *:not(.fcrd2-section-bg){position:relative;z-index:1;}
+
+/* ---------- Quiénes somos: directiva photo (below Misión/Visión) ---------- */
+/* width:100%;height:auto (no object-fit:cover, no fixed aspect-ratio
+   box) means the photo always renders at its own natural ratio - the
+   complete image, nothing cropped. Styled as a clean card (rounded
+   corners, thin border, soft shadow) matching .fcrd2-auth-card's own
+   treatment elsewhere on the page, rather than a faded/vignetted edge. */
+.fcrd2-directiva-wrap{margin-top:8px;}
+.fcrd2-directiva-img{
+  display:block;
+  width:100%;
+  height:auto;
+  border:1px solid var(--silver-soft);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+}
+.fcrd2-directiva-caption{font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--carbon-soft);text-align:center;margin-top:14px;}
 
 /* ---------- Two-column text grid (Misión / Visión) ---------- */
 .fcrd2-grid-2{display:grid;grid-template-columns:1fr;gap:26px;}
@@ -48,9 +120,17 @@ footer{scroll-margin-top:121px;}
 
 /* ---------- Decorative corner brackets (editorial motif) ---------- */
 .fcrd2-section::before,.fcrd2-section::after,
-.fcrd2-hero::before,.fcrd2-hero::after{content:'';position:absolute;width:9px;height:9px;border-left:1.5px solid var(--silver);border-top:1.5px solid var(--silver);opacity:0.7;pointer-events:none;}
-.fcrd2-section::before,.fcrd2-hero::before{top:18px;left:18px;}
-.fcrd2-section::after,.fcrd2-hero::after{bottom:18px;right:18px;transform:rotate(180deg);}
+.fcrd2-hero-inner::before,.fcrd2-hero-inner::after{content:'';position:absolute;width:9px;height:9px;border-left:1.5px solid var(--silver);border-top:1.5px solid var(--silver);opacity:0.7;pointer-events:none;}
+.fcrd2-section::before,.fcrd2-hero-inner::before{top:18px;left:18px;}
+.fcrd2-section::after,.fcrd2-hero-inner::after{bottom:18px;right:18px;transform:rotate(180deg);}
+
+/* ---------- Tighter gap between #estado-actual and #acceso ---------- */
+/* The standard 70px+70px section padding (see .fcrd2-section above) left
+   a large empty stretch between the map and the download console right
+   below it - these two read as one continuous flow, so they get a
+   smaller gap than section boundaries elsewhere on the page. */
+#estado-actual{padding-bottom:32px;}
+#acceso{padding-top:32px;}
 
 /* ---------- Decorative background dot (concentric-circles motif) ---------- */
 .fcrd2-bg-dot{position:absolute;width:150px;height:150px;pointer-events:none;opacity:0.6;z-index:0;-webkit-mask-image:linear-gradient(to left, black 45%, transparent 92%);mask-image:linear-gradient(to left, black 45%, transparent 92%);}
@@ -83,6 +163,13 @@ footer{scroll-margin-top:121px;}
    the 700px "mobile" breakpoint below - a 768px tablet in portrait is
    the most common real device that hits this. Hidden separately here,
    at a width wide enough that the overhang always stays on-screen. */
+/* Wider side gutters below desktop - see the matching block in
+   components/hero.css; the section shell and the hero inner column keep
+   the same gutter at each step so body copy lines up between them. */
+@media (max-width:1024px){
+  .fcrd2-section{padding:60px 56px;}
+}
+
 @media (max-width:850px){
   .fcrd2-bg-dot{display:none;}
 }
@@ -90,11 +177,11 @@ footer{scroll-margin-top:121px;}
 @media (max-width:700px){
   .fcrd2-section-top{bottom:14px;right:14px;width:32px;height:32px;opacity:0.55;}
   .fcrd2-section::before,.fcrd2-section::after,
-  .fcrd2-hero::before,.fcrd2-hero::after{display:none;}
-  .fcrd2-section{padding:50px 24px;}
+  .fcrd2-hero-inner::before,.fcrd2-hero-inner::after{display:none;}
+  .fcrd2-section{padding:50px 40px;}
 }
 
 @media (max-width:420px){
-  .fcrd2-section{padding:40px 20px;}
+  .fcrd2-section{padding:40px 28px;}
   .fcrd2-h2{font-size:22px;}
 }

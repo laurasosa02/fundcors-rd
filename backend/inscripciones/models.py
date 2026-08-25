@@ -12,8 +12,8 @@ class Inscripcion(models.Model):
     """
 
     nombre = models.CharField(max_length=200, verbose_name="nombre y apellido")
-    cedula = models.CharField(max_length=20, verbose_name="cedula")
-    telefono = models.CharField(max_length=20, verbose_name="telefono")
+    cedula = models.CharField(max_length=20, verbose_name="cédula")
+    telefono = models.CharField(max_length=20, verbose_name="teléfono")
     correo = models.EmailField(verbose_name="correo")
     created_at = models.DateTimeField(auto_now_add=True)
 

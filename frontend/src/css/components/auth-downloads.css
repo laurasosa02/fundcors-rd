@@ -16,13 +16,17 @@
 .fcrd2-auth-card h3{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--carbon);border-top:2px solid var(--green);padding-top:12px;width:fit-content;}
 .fcrd2-auth-card p.sub{font-family:var(--font-body);font-size:14px;color:var(--carbon-soft);}
 
-.fcrd2-auth-tabbed{max-width:100%;margin:0 auto;width:100%;border:none;box-shadow:none;padding:0;background:none;}
+/* Capped for the same reason as .fcrd2-form-wrap in forms.css - without
+   this the tabs/fields/download rows stretched to the section's full
+   1100/1300px width on large monitors instead of a normal reading
+   measure. */
+.fcrd2-auth-tabbed{max-width:640px;margin:0 auto;width:100%;border:none;box-shadow:none;padding:0;background:none;}
 
 .fcrd2-auth-tabs{display:flex;gap:24px;background:none;border-radius:0;padding:0;margin-bottom:4px;border-bottom:1px solid var(--silver-soft);}
 .fcrd2-auth-tab{flex:1;background:none;border:none;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--carbon-soft);padding:10px 0;border-radius:0;border-bottom:2px solid transparent;transition:background 150ms var(--ease),color 150ms var(--ease);}
 .fcrd2-auth-tab.active{color:var(--green-dark);border-bottom-color:var(--green);}
 
-.fcrd2-downloads{display:flex;flex-direction:column;gap:20px;}
+.fcrd2-downloads{display:flex;flex-direction:column;gap:20px;max-width:640px;margin:0 auto;width:100%;}
 .fcrd2-downloads-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .fcrd2-downloads-topbar-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
 

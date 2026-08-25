@@ -50,7 +50,7 @@ class FundcorsrdUserAdmin(UserAdmin):
                 message=(
                     f"Hola {user.get_full_name() or user.username},\n\n"
                     "Tu cuenta en el portal de FUNDCORSRD ha sido aprobada. "
-                    "Ya puedes iniciar sesion.\n\n"
+                    "Ya puedes iniciar sesión.\n\n"
                     "FUNDCORSRD"
                 ),
                 from_email=settings.DEFAULT_FROM_EMAIL,

@@ -28,13 +28,23 @@ html{-webkit-text-size-adjust:100%;}
    putting it on <body> would. */
 html{overflow-x:hidden;}
 
+/* The linear-gradient layer is what ties the hero and footer's own photo
+   backgrounds together: both photos fade to a similar soft green at the
+   edge where they meet the next section, so this gradient picks up that
+   same green at the very top and bottom of the page and eases through
+   white in between - the sections between hero and footer are all
+   transparent (see .fcrd2-section in layout.css), so this single
+   gradient is what they actually show, instead of a hard cut from photo
+   straight to flat white. Painted under the existing dot-grid texture
+   (listed first, so it stays on top) rather than replacing it. */
 body{
   width:100%;
   font-family:var(--font-body);
   color:var(--carbon);
-  background:#ffffff;
-  background-image:radial-gradient(circle, rgba(17,96,53,0.07) 1px, transparent 1px);
-  background-size:26px 26px;
+  background-color:#ffffff;
+  background-image:radial-gradient(circle, rgba(17,96,53,0.07) 1px, transparent 1px),
+    linear-gradient(180deg, var(--green-soft) 0%, #ffffff 18%, #ffffff 88%, var(--green-soft) 100%);
+  background-size:26px 26px, 100% 100%;
 }
 
 a{text-decoration:none;color:inherit;}

@@ -14,11 +14,11 @@ def downloads_view(request):
     redirect to a login page.
     """
     if not request.user.is_authenticated:
-        return JsonResponse({"message": "Debes iniciar sesion"}, status=401)
+        return JsonResponse({"message": "Debes iniciar sesión"}, status=401)
 
     if request.user.status != "approved":
         return JsonResponse(
-            {"message": "Tu cuenta aun no ha sido aprobada"}, status=403
+            {"message": "Tu cuenta aún no ha sido aprobada"}, status=403
         )
 
     return JsonResponse({"downloads": settings.DOWNLOAD_LINKS})
