@@ -66,58 +66,40 @@ Requiere `lftp` (`brew install lftp`), que es lo que hace el espejado tanto por 
 
 ## 3-bis. Actualizar el backend (PythonAnywhere)
 
-El backend está en una cuenta de PythonAnywhere de pago (plan Hacker o superior), subido ahí manualmente (no como clon de git). Esto se puede convertir a un clon de git **una sola vez**, y a partir de ahí cada actualización se reduce a un `git pull`.
+El backend está en una cuenta de PythonAnywhere de pago (plan Hacker o superior). Ya está convertido en clon de git — ese paso único ya se hizo (ver "Cómo quedó armado esto" más abajo si hace falta reproducirlo en una cuenta nueva) — así que la actualización de rutina es solo tres pasos.
 
-### Conectarse por SSH
+**Importante:** el clon de PythonAnywhere no seguye la rama `main` del repositorio (esa mezcla `frontend/` y `backend/`). Sigue una rama aparte, `backend-deploy`, que contiene *solo* el contenido de `backend/`, sin el prefijo `backend/` — porque PythonAnywhere espera `manage.py` directamente en la raíz del clon. Esa rama no se actualiza sola: hay que regenerarla desde `main` cada vez que cambia algo dentro de `backend/`, **antes** de hacer `git pull` en PythonAnywhere.
 
-Con un plan de pago hay acceso SSH desde tu propia terminal (además de la consola Bash del navegador). El host depende de en cuál sitio de PythonAnywhere te registraste:
+### Paso 1 (en esta máquina): sincronizar `backend-deploy` con `main`
 
-- `www.pythonanywhere.com` (global/EE.UU.) → `ssh <tu-usuario>@ssh.pythonanywhere.com`
-- `eu.pythonanywhere.com` (Europa) → `ssh <tu-usuario>@ssh.eu.pythonanywhere.com`
-
-```bash
-ssh TU_USUARIO@ssh.pythonanywhere.com   # o ssh.eu.pythonanywhere.com si te registraste en el sitio europeo
-```
-
-La primera vez pedirá confirmar la huella (fingerprint) del servidor — para esta cuenta es `SHA256:zy2jmqxNg/fs6tFZK55OjHTI3B2UofzOiUvTPtcX3/Y`, así que si coincide es seguro escribir `yes`.
-
-### Paso único: convertir la carpeta actual en un clon de git
-
-Ya conectado (por SSH o desde la consola Bash del panel):
+Solo hace falta cuando `backend/` cambió desde la última vez. Con los cambios ya subidos a `main` en GitHub:
 
 ```bash
-cd ~/ruta-a-tu-carpeta-del-backend   # confirma la ruta real con: ls ~ y con la pestaña "Web" del panel (Source code / Working directory)
-
-# Respaldo de seguridad antes de tocar nada (por si algo no cuadra):
-cp -r . ../backend-respaldo-$(date +%Y%m%d)
-
-git init
-git remote add origin https://github.com/laurasosa02/fundcors-rd.git
-git fetch origin
-git reset --hard origin/main
+./scripts/sync-backend-deploy.sh
 ```
 
-`git reset --hard` solo toca archivos que están en el repositorio — `.env`, la base de datos (`db.sqlite3`) y el entorno virtual no están versionados (están en `.gitignore`), así que no se tocan. Aun así, revisa con `git status` que no falte nada esperado antes de continuar, y borra la carpeta de respaldo (`backend-respaldo-...`) una vez que confirmes que todo sigue funcionando.
+Este script reconstruye la rama `backend-deploy` a partir del `backend/` actual de `main` y la sube a GitHub. Si no hay nada nuevo que sincronizar, lo dice y no hace nada.
 
-Como el repositorio completo incluye tanto `frontend/` como `backend/`, y esta carpeta en PythonAnywhere debe contener solo el backend, hace falta decirle a git que solo mantenga actualizada la subcarpeta `backend/` dentro de esta carpeta. La forma más simple: en vez de clonar el repo completo aquí, mover el working directory de la app Python (configurado en la pestaña **Web** del panel) para que apunte a `~/fundcors-rd/backend` después de clonar el repo completo una vez en `~/fundcors-rd`:
+### Paso 2: conectarse a PythonAnywhere
+
+Por la consola **Bash** del panel web, o por SSH desde tu propia terminal (el host depende de en cuál sitio de PythonAnywhere te registraste):
 
 ```bash
-cd ~
-git clone https://github.com/laurasosa02/fundcors-rd.git
-# copia tu .env existente (y cualquier otro archivo local que no esté en git) a ~/fundcors-rd/backend/
+ssh TU_USUARIO@ssh.pythonanywhere.com
 ```
 
-Después de esto, actualiza en la pestaña **Web** del panel de PythonAnywhere la ruta del código fuente / working directory / virtualenv para que apunten dentro de `~/fundcors-rd/backend/`, y borra la carpeta manual anterior una vez confirmes que la app sigue funcionando igual.
+(`ssh.eu.pythonanywhere.com` si te registraste en el sitio europeo). La primera vez pedirá confirmar la huella del servidor — para esta cuenta es `SHA256:zy2jmqxNg/fs6tFZK55OjHTI3B2UofzOiUvTPtcX3/Y`; si coincide, es seguro escribir `yes`.
 
-### Actualizar después de cada cambio
+### Paso 3 (en PythonAnywhere): traer los cambios
 
 ```bash
-cd ~/fundcors-rd
-git pull origin main
-cd backend
-pip install -r requirements.txt   # solo si requirements.txt cambió
-python manage.py migrate          # solo si hay migraciones nuevas
+cd ~/fundcorsrd-backend
+git pull
+pip install -r requirements.txt
+python manage.py migrate
 ```
+
+`pip install` y `migrate` no rompen nada si no había nada nuevo que instalar/migrar — correrlos siempre es más simple que acordarse de cuándo hace falta. `git pull` (sin especificar rama) funciona porque este clon ya está configurado para seguir `origin/backend-deploy` por defecto.
 
 Y por último, recargar la app — con un plan de pago hay dos formas:
 
@@ -127,6 +109,25 @@ Y por último, recargar la app — con un plan de pago hay dos formas:
   curl -X POST -H "Authorization: Token TU_TOKEN_AQUI" \
     https://www.pythonanywhere.com/api/v0/user/TU_USUARIO/webapps/TU_DOMINIO/reload/
   ```
+
+### Cómo quedó armado esto (referencia — solo hace falta para una cuenta nueva)
+
+En la cuenta actual, `~/fundcorsrd-backend` ya es un clon de `https://github.com/laurasosa02/fundcors-rd.git` en la rama `backend-deploy`, con la pestaña **Web** del panel apuntando a esa carpeta (Source code / Working directory / virtualenv). Si algún día hay que montar esto desde cero en una cuenta nueva:
+
+```bash
+cd ~
+git clone --branch backend-deploy https://github.com/laurasosa02/fundcors-rd.git fundcorsrd-backend
+cd fundcorsrd-backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+# crea el .env real aquí (ver backend/.env.example en el repo principal) —
+# este archivo nunca viene en el clon, está en .gitignore a propósito.
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+Después, en la pestaña **Web** del panel: apuntar el working directory / virtualenv / WSGI a esta carpeta, y **Reload**.
 
 ## 4. Activación de cuentas de agrimensores
 
