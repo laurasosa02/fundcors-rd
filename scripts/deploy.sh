@@ -101,8 +101,21 @@ fi
 
 # Commands (and the credentials) go to lftp over stdin rather than argv, so the
 # hosting password never shows up in `ps` output while the upload runs.
+#
+# mirror --verbose echoes the literal get/put commands it runs for each
+# file, and those embed the full sftp://user:pass@host URL from the open
+# command above — so the password otherwise ends up printed to the
+# terminal once per file transferred (observed in practice, not just a
+# theoretical risk: it's how a real deploy run leaked a real password into
+# a pasted terminal log). Piping through this filter strips it from
+# anything lftp prints, on stdout or stderr, regardless of verbosity
+# level. DEPLOY_FTP_PASS is exported so perl reads it from %ENV rather
+# than having it spliced into the perl source text itself, which would
+# break (or silently mismatch) if the password contains characters like
+# unescaped `/` or `$`.
+export DEPLOY_FTP_PASS
 run_lftp() {
-  lftp <<LFTP_SCRIPT
+  lftp <<LFTP_SCRIPT 2>&1 | perl -pe 's/\Q$ENV{DEPLOY_FTP_PASS}\E/[REDACTED]/g'
 $LFTP_SETTINGS
 open -u "$DEPLOY_FTP_USER","$DEPLOY_FTP_PASS" "$REMOTE_URL"
 $1
