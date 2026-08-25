@@ -1,7 +1,7 @@
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.core.mail import send_mail
+
+from core.mailer import send_notification_email
 
 from .models import User
 
@@ -45,7 +45,7 @@ class FundcorsrdUserAdmin(UserAdmin):
         # delivery, so notification emails are sent with fail_silently=True
         # and never gate/undo the status update.
         for user in queryset:
-            send_mail(
+            send_notification_email(
                 subject="Tu cuenta de FUNDCORSRD ha sido aprobada",
                 message=(
                     f"Hola {user.get_full_name() or user.username},\n\n"
@@ -53,9 +53,7 @@ class FundcorsrdUserAdmin(UserAdmin):
                     "Ya puedes iniciar sesión.\n\n"
                     "FUNDCORSRD"
                 ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
-                fail_silently=True,
             )
         self.message_user(request, f"{updated} usuario(s) aprobado(s).")
 

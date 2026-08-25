@@ -1,15 +1,13 @@
 import json
-import logging
 import re
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from .models import Inscripcion
+from core.mailer import send_notification_email
 
-logger = logging.getLogger(__name__)
+from .models import Inscripcion
 
 # Dominican cedula: three digits, optional dash, seven digits, optional
 # dash, one digit. Accepts either the dashed format (000-0000000-0) or 11
@@ -79,22 +77,13 @@ def _send_admin_inscripcion_email(inscripcion):
     )
 
     # The database save must always succeed regardless of email delivery,
-    # so this is fail_silently. If it does fail, log it rather than
-    # swallowing it without a trace.
-    sent = send_mail(
+    # so this is fail_silently (the default) - send_notification_email
+    # logs a warning on failure rather than swallowing it without a trace.
+    send_notification_email(
         subject="Nueva solicitud de inscripción - FUNDCORSRD",
         message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
-        fail_silently=True,
     )
-    if not sent:
-        logger.warning(
-            "Failed to send admin inscripcion-notification email for "
-            "inscripcion id=%s correo=%s",
-            inscripcion.id,
-            inscripcion.correo,
-        )
 
 
 @require_POST
