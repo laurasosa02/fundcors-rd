@@ -7,11 +7,13 @@
   to color/populate it from the backend auth response.
 */
 
-/* Capped and centered so the form's input fields don't stretch to the
-   section's full width on large monitors (.fcrd2-section widens to
-   1100/1300px there, see layout.css) - full-width fields at that size
-   read as oddly long lines. */
-.fcrd2-form-wrap{display:grid;grid-template-columns:1fr;gap:36px;align-items:start;max-width:640px;margin:0 auto;width:100%;}
+/* Capped so the form's input fields don't stretch to the section's full
+   width on large monitors (.fcrd2-section widens to 1100/1300px there,
+   see layout.css) - full-width fields at that size read as oddly long
+   lines. Left-aligned (not centered) so it lines up with the heading
+   and lead paragraph above it instead of drifting toward the middle of
+   the widened section. */
+.fcrd2-form-wrap{display:grid;grid-template-columns:1fr;gap:36px;align-items:start;max-width:640px;width:100%;}
 
 .fcrd2-form-card{background:none;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;gap:22px;}
 

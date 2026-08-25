@@ -68,3 +68,19 @@ a{text-decoration:none;color:inherit;}
    attempts on individual buttons in the markup). */
 .fcrd2-btn{background:var(--white) !important;color:var(--green) !important;border:1px solid var(--green) !important;}
 .fcrd2-btn:hover{background:var(--green-soft) !important;}
+
+/* Every button site-wide is a translucent frosted card at every screen
+   size - phone, tablet, and large monitor alike - rather than switching
+   to a solid outlined style once there's more room. Comes after the
+   block above on purpose - at equal specificity, two `!important`
+   declarations on the same selector are decided by source order, so
+   this has to sit later to win. */
+.fcrd2-btn{
+  background:rgba(255,255,255,0.55) !important;
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(15,82,48,0.22) !important;
+  border-radius:16px;
+  box-shadow:0 2px 12px rgba(15,82,48,0.08);
+}
+.fcrd2-btn:active{background:rgba(255,255,255,0.85) !important;}

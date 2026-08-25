@@ -109,7 +109,7 @@
 .fcrd2-hero p{font-family:var(--font-body);font-size:17px;line-height:1.85;color:var(--carbon-soft);max-width:640px;text-align:justify;overflow-wrap:break-word;}
 .fcrd2-hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
 
-.fcrd2-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:44px;padding-top:0;border-top:none;border-left:1px solid var(--silver-soft);width:100%;max-width:100%;}
+.fcrd2-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:44px;padding-top:0;border-top:none;border-left:1px solid var(--silver-soft);width:100%;max-width:100%;}
 .fcrd2-stats > div{padding:0 20px;border-right:1px solid var(--silver-soft);}
 .fcrd2-stat-num{font-family:var(--font-mono);font-weight:600;font-size:24px;color:#0f5230;border-top:none;padding-top:0;display:inline-block;}
 .fcrd2-stat-label{font-family:var(--font-body);font-size:13px;color:var(--carbon-soft);margin-top:4px;}
@@ -127,13 +127,18 @@
 @media (max-width:700px){
   .fcrd2-hero-inner{padding:44px 40px 60px;}
   .fcrd2-hero p{font-size:16px;}
-  /* Stacked full-width instead of wrapping - 3 buttons of uneven label
-     length wrapped as 2-then-1, leaving the lone third button sitting
-     next to a large patch of empty space instead of reading as a
-     deliberate group. */
-  .fcrd2-hero-ctas{flex-direction:column;align-items:stretch;}
-  .fcrd2-hero-ctas .fcrd2-btn{width:100%;}
-  .fcrd2-stats{grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-top:32px;}
+  /* Two short buttons side by side, the longer label ("Ver estado de
+     la red") reordered onto its own full-width row below - avoids both
+     the fully-stacked look and the orphan-button-next-to-empty-space
+     that plain wrapping produced. The frosted-card look itself (background,
+     border, radius, shadow) comes from the site-wide `.fcrd2-btn` mobile
+     rule in base.css - only the hero's 2-column layout lives here. */
+  .fcrd2-hero-ctas{flex-wrap:wrap;gap:12px;}
+  .fcrd2-hero-ctas .fcrd2-btn{flex:1 1 calc(50% - 6px);padding:16px 14px;}
+  .fcrd2-hero-ctas .fcrd2-btn svg{width:17px;height:17px;flex-shrink:0;}
+  .fcrd2-hero-ctas .fcrd2-btn:nth-child(2){order:3;flex-basis:100%;}
+  .fcrd2-hero-ctas .fcrd2-btn:nth-child(3){order:2;}
+  .fcrd2-stats{gap:24px 16px;margin-top:32px;}
   .fcrd2-stats > div{padding:0 12px;}
 }
 
