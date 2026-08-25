@@ -13,13 +13,14 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.utils.html import escape
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+
+from core.mailer import send_notification_email
 
 from .models import User
 from .tokens import make_approval_token, read_approval_token
@@ -160,21 +161,13 @@ def _send_admin_registration_email(user):
     )
 
     # Registration must succeed even if email delivery fails, so this is
-    # fail_silently. If it does fail, log it rather than swallowing it
-    # without a trace.
-    sent = send_mail(
+    # fail_silently (the default) - send_notification_email logs a
+    # warning on failure rather than swallowing it without a trace.
+    send_notification_email(
         subject="Nuevo registro - FUNDCORSRD",
         message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
-        fail_silently=True,
     )
-    if not sent:
-        logger.warning(
-            "Failed to send admin registration-notification email for user id=%s email=%s",
-            user.id,
-            user.email,
-        )
 
 
 def _send_verification_email(request, user):
@@ -186,7 +179,7 @@ def _send_verification_email(request, user):
     token = make_approval_token(user.id, "verify_email")
     verify_url = request.build_absolute_uri(f"/auth/verify-email/?token={token}")
 
-    sent = send_mail(
+    send_notification_email(
         subject="Verifica tu correo electrónico - FUNDCORSRD",
         message=(
             f"Hola {user.get_full_name() or user.username},\n\n"
@@ -197,16 +190,8 @@ def _send_verification_email(request, user):
             "Si no solicitaste este registro, puedes ignorar este mensaje.\n\n"
             "FUNDCORSRD"
         ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        fail_silently=True,
     )
-    if not sent:
-        logger.warning(
-            "Failed to send verification email for user id=%s email=%s",
-            user.id,
-            user.email,
-        )
 
 
 def _generate_temp_password(length=12):
@@ -229,7 +214,7 @@ def _generate_temp_password(length=12):
 
 
 def _send_temp_password_email(user, new_password):
-    sent = send_mail(
+    send_notification_email(
         subject="Tu nueva contraseña temporal - FUNDCORSRD",
         message=(
             f"Hola {user.get_full_name() or user.username},\n\n"
@@ -242,16 +227,8 @@ def _send_temp_password_email(user, new_password):
             "inmediato.\n\n"
             "FUNDCORSRD"
         ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        fail_silently=True,
     )
-    if not sent:
-        logger.warning(
-            "Failed to send temporary-password email for user id=%s email=%s",
-            user.id,
-            user.email,
-        )
 
 
 @require_GET
