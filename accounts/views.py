@@ -55,7 +55,7 @@ def _parse_json_body(request):
     try:
         data = json.loads(request.body)
     except (json.JSONDecodeError, UnicodeDecodeError):
-        return None, JsonResponse({"message": "JSON invalido"}, status=400)
+        return None, JsonResponse({"message": "JSON inválido"}, status=400)
     if not isinstance(data, dict):
         data = {}
     return data, None
@@ -78,7 +78,7 @@ def _validate_registration(data):
 
     email = data.get("email")
     if isinstance(email, str) and email.strip() and "@" not in email:
-        add_error("email", "El correo electronico no es valido.")
+        add_error("email", "El correo electrónico no es válido.")
 
     password = data.get("password")
     if isinstance(password, str) and password:
@@ -95,13 +95,13 @@ def _validate_registration(data):
 
     password_confirm = data.get("password_confirm")
     if password != password_confirm:
-        add_error("password_confirm", "Las contrasenas no coinciden.")
+        add_error("password_confirm", "Las contraseñas no coinciden.")
 
     # Only bother checking uniqueness once the email has passed the basic
     # shape checks above.
     if "email" not in errors and isinstance(email, str) and email.strip():
         if User.objects.filter(email=email.strip()).exists():
-            add_error("email", "Ya existe una cuenta con este correo electronico.")
+            add_error("email", "Ya existe una cuenta con este correo electrónico.")
 
     return errors
 
@@ -151,11 +151,11 @@ def _send_admin_registration_email(user):
     """
     message = (
         "Nuevo registro en el portal de FUNDCORSRD (se activa "
-        "automaticamente al verificar el correo, sin necesitar "
-        "aprobacion).\n\n"
+        "automáticamente al verificar el correo, sin necesitar "
+        "aprobación).\n\n"
         f"Nombre: {user.get_full_name() or user.username}\n"
-        f"Cedula: {user.cedula}\n"
-        f"Telefono: {user.telefono}\n"
+        f"Cédula: {user.cedula}\n"
+        f"Teléfono: {user.telefono}\n"
         f"Correo: {user.email}\n"
     )
 
@@ -187,11 +187,11 @@ def _send_verification_email(request, user):
     verify_url = request.build_absolute_uri(f"/auth/verify-email/?token={token}")
 
     sent = send_mail(
-        subject="Verifica tu correo electronico - FUNDCORSRD",
+        subject="Verifica tu correo electrónico - FUNDCORSRD",
         message=(
             f"Hola {user.get_full_name() or user.username},\n\n"
             "Gracias por registrarte en el portal de FUNDCORSRD. Antes de "
-            "poder iniciar sesion necesitamos confirmar que esta direccion "
+            "poder iniciar sesión necesitamos confirmar que esta dirección "
             "de correo es tuya.\n\n"
             f"Verificar mi correo: {verify_url}\n\n"
             "Si no solicitaste este registro, puedes ignorar este mensaje.\n\n"
@@ -230,13 +230,13 @@ def _generate_temp_password(length=12):
 
 def _send_temp_password_email(user, new_password):
     sent = send_mail(
-        subject="Tu nueva contrasena temporal - FUNDCORSRD",
+        subject="Tu nueva contraseña temporal - FUNDCORSRD",
         message=(
             f"Hola {user.get_full_name() or user.username},\n\n"
             "Solicitaste recuperar el acceso a tu cuenta en el portal de "
-            "FUNDCORSRD. Esta es tu nueva contrasena temporal:\n\n"
+            "FUNDCORSRD. Esta es tu nueva contraseña temporal:\n\n"
             f"    {new_password}\n\n"
-            "Inicia sesion con ella y, por tu seguridad, cambiala por una "
+            "Inicia sesión con ella y, por tu seguridad, cámbiala por una "
             "de tu preferencia lo antes posible.\n\n"
             "Si no solicitaste este cambio, contacta a FUNDCORSRD de "
             "inmediato.\n\n"
@@ -273,7 +273,7 @@ def register_view(request):
     # response rather than needing a second round-trip to discover it.
     if not _verify_recaptcha(data.get("recaptcha_token"), request.META.get("REMOTE_ADDR")):
         errors.setdefault("recaptcha_token", []).append(
-            "Verificacion de seguridad fallida. Intenta de nuevo."
+            "Verificación de seguridad fallida. Intenta de nuevo."
         )
 
     if errors:
@@ -304,7 +304,7 @@ def register_view(request):
         return JsonResponse(
             {
                 "errors": {
-                    "email": ["Ya existe una cuenta con este correo electronico."]
+                    "email": ["Ya existe una cuenta con este correo electrónico."]
                 }
             },
             status=400,
@@ -330,14 +330,14 @@ def login_view(request):
     user = authenticate(request, username=email, password=password)
 
     if user is None:
-        return JsonResponse({"message": "Credenciales invalidas"}, status=401)
+        return JsonResponse({"message": "Credenciales inválidas"}, status=401)
 
     if user.email_verified_at is None:
         return JsonResponse(
             {
                 "message": (
-                    "Debes verificar tu correo electronico antes de iniciar "
-                    "sesion. Revisa tu bandeja de entrada."
+                    "Debes verificar tu correo electrónico antes de iniciar "
+                    "sesión. Revisa tu bandeja de entrada."
                 ),
                 "status": "unverified",
             },
@@ -353,7 +353,7 @@ def login_view(request):
         # verified user's status back to pending from /django-admin/.
         return JsonResponse(
             {
-                "message": "Tu cuenta no esta activa. Contacta a FUNDCORSRD para mas informacion.",
+                "message": "Tu cuenta no está activa. Contacta a FUNDCORSRD para más información.",
                 "status": "pending",
             },
             status=403,
@@ -364,7 +364,7 @@ def login_view(request):
             {
                 "message": (
                     "Tu solicitud de registro fue rechazada. Contacta a "
-                    "FUNDCORSRD para mas informacion."
+                    "FUNDCORSRD para más información."
                 ),
                 "status": "rejected",
             },
@@ -378,7 +378,7 @@ def login_view(request):
 
 
 _FORGOT_PASSWORD_GENERIC_MESSAGE = (
-    "Si el correo esta registrado, te enviamos una contrasena temporal. "
+    "Si el correo está registrado, te enviamos una contraseña temporal. "
     "Revisa tu bandeja de entrada."
 )
 
@@ -397,7 +397,7 @@ def forgot_password_view(request):
     """
     if getattr(request, "limited", False):
         return JsonResponse(
-            {"message": "Demasiados intentos. Intenta mas tarde."}, status=429
+            {"message": "Demasiados intentos. Intenta más tarde."}, status=429
         )
 
     data, error_response = _parse_json_body(request)
@@ -430,7 +430,7 @@ def change_password_view(request):
     registration via validate_password.
     """
     if not request.user.is_authenticated:
-        return JsonResponse({"message": "Debes iniciar sesion."}, status=401)
+        return JsonResponse({"message": "Debes iniciar sesión."}, status=401)
 
     data, error_response = _parse_json_body(request)
     if error_response is not None:
@@ -444,7 +444,7 @@ def change_password_view(request):
 
     if not request.user.check_password(current_password):
         errors.setdefault("current_password", []).append(
-            "La contrasena actual no es correcta."
+            "La contraseña actual no es correcta."
         )
 
     if isinstance(new_password, str) and new_password:
@@ -458,7 +458,7 @@ def change_password_view(request):
 
     if new_password != new_password_confirm:
         errors.setdefault("new_password_confirm", []).append(
-            "Las contrasenas no coinciden."
+            "Las contraseñas no coinciden."
         )
 
     if errors:
@@ -474,13 +474,13 @@ def change_password_view(request):
     # the correct/expected behavior for a password change.
     update_session_auth_hash(request, request.user)
 
-    return JsonResponse({"message": "Contrasena actualizada correctamente."})
+    return JsonResponse({"message": "Contraseña actualizada correctamente."})
 
 
 @require_POST
 def logout_view(request):
     logout(request)
-    return JsonResponse({"message": "Sesion cerrada"})
+    return JsonResponse({"message": "Sesión cerrada"})
 
 
 @require_GET
@@ -498,7 +498,7 @@ def me_view(request):
 
 def _invalid_link_response():
     return HttpResponse(
-        "<p>Enlace invalido o expirado</p>", status=400, content_type="text/html"
+        "<p>Enlace inválido o expirado</p>", status=400, content_type="text/html"
     )
 
 

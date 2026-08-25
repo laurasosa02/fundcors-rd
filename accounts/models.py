@@ -16,8 +16,8 @@ class User(AbstractUser):
         REJECTED = "rejected", "Rechazado"
 
     email = models.EmailField(unique=True)
-    cedula = models.CharField(max_length=20)
-    telefono = models.CharField(max_length=20)
+    cedula = models.CharField("Cédula", max_length=20)
+    telefono = models.CharField("Teléfono", max_length=20)
     status = models.CharField(
         max_length=10,
         choices=Status.choices,
