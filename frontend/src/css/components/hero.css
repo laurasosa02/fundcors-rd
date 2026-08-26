@@ -109,9 +109,15 @@
 .fcrd2-hero p{font-family:var(--font-body);font-size:17px;line-height:1.85;color:var(--carbon-soft);max-width:640px;text-align:justify;overflow-wrap:break-word;}
 .fcrd2-hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
 
-.fcrd2-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:44px;padding-top:0;border-top:none;border-left:1px solid var(--silver-soft);width:100%;max-width:100%;}
-.fcrd2-stats > div{padding:0 20px;border-right:1px solid var(--silver-soft);}
-.fcrd2-stat-num{font-family:var(--font-mono);font-weight:600;font-size:24px;color:#0f5230;border-top:none;padding-top:0;display:inline-block;}
+/* Back to plain text (no card background/border/shadow) - a thin
+   left-border on every item but the first stands in for the divider
+   instead, content-sized via flex so the row never stretches wider than
+   its own text (which is what caused the earlier huge-gap/staggered-edge
+   problems with both the grid and the frosted-chip versions). */
+.fcrd2-stats{display:flex;flex-wrap:wrap;gap:0;margin-top:20px;}
+.fcrd2-stats > div{padding:0 24px;border-left:1px solid var(--silver-soft);}
+.fcrd2-stats > div:first-child{padding-left:0;border-left:none;}
+.fcrd2-stat-num{font-family:var(--font-mono);font-weight:600;font-size:24px;color:#0f5230;display:inline-block;}
 .fcrd2-stat-label{font-family:var(--font-body);font-size:13px;color:var(--carbon-soft);margin-top:4px;}
 
 /* Wider side gutters below desktop. The single 40px gutter inherited
@@ -138,8 +144,15 @@
   .fcrd2-hero-ctas .fcrd2-btn svg{width:17px;height:17px;flex-shrink:0;}
   .fcrd2-hero-ctas .fcrd2-btn:nth-child(2){order:3;flex-basis:100%;}
   .fcrd2-hero-ctas .fcrd2-btn:nth-child(3){order:2;}
-  .fcrd2-stats{gap:24px 16px;margin-top:32px;}
-  .fcrd2-stats > div{padding:0 12px;}
+  /* Without this, the browser decides how many stats fit per line using
+     each item's own unwrapped text width - "CORS disponibles (30
+     Fundcorsrd + 9 JI)" alone is wider than the phone's available
+     space, so it claimed the whole first line and pushed "24/7" onto a
+     second line, flush against the first item's last line of text.
+     flex-wrap:nowrap plus an even flex-basis forces both into one row
+     and lets each one's OWN text wrap internally instead. */
+  .fcrd2-stats{flex-wrap:nowrap;}
+  .fcrd2-stats > div{flex:1 1 0;min-width:0;}
 }
 
 @media (max-width:420px){
