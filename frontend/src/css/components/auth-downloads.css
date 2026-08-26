@@ -45,8 +45,19 @@
 .fcrd2-download-row:hover .fcrd2-download-action{background:var(--green);border-color:var(--green);color:var(--white);}
 .fcrd2-download-row:hover .fcrd2-download-action svg{transform:translateY(2px);}
 
+/* .fcrd2-download-text's base flex:1 has a 0 flex-basis, so the browser's
+   line-fitting check (which happens before grow/shrink) saw it as
+   needing ~0px and judged icon+text+action as already fitting on one
+   line - even when the fixed-width action button (flex-shrink:0, sized
+   to its own text - "Abrir CORSDist Web" is a long label) then left it
+   almost no room to actually grow into, squeezing the description down
+   to one word per line instead of wrapping the row like intended below.
+   Giving it a real flex-basis here makes that fitting check honest, so
+   the row actually wraps (action moving under the text, per the
+   margin-left below) once there truly isn't enough width. */
 @media (max-width:980px){
   .fcrd2-download-row{flex-wrap:wrap;}
+  .fcrd2-download-text{flex-basis:180px;}
   .fcrd2-download-action{margin-left:62px;}
 }
 
