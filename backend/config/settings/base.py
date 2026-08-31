@@ -227,7 +227,14 @@ DOWNLOAD_LINKS = [
         ),
     },
     {
-        "label": "Soluciones Red FC",
+        # NOTE: label must match the frontend row's .label text in
+        # frontend/src/index.html exactly (js/modules/downloads.js matches
+        # rows by exact label text to refresh their href) - this previously
+        # read "Soluciones Red FC" while the frontend row says "Soluciones
+        # de las CORS", so the match always failed silently and this row's
+        # href never left its disabled "#" placeholder for any user. Same
+        # bug as the Hojas Topográficas fix above, just not caught then.
+        "label": "Soluciones de las CORS",
         "description": "Archivos de solucion de la Red FC para post-proceso",
         "url": os.environ.get(
             "DOWNLOAD_URL_SOLUCIONES",
