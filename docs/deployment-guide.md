@@ -96,10 +96,13 @@ ssh TU_USUARIO@ssh.pythonanywhere.com
 cd ~/fundcorsrd-backend
 git pull
 pip install -r requirements.txt
+set -a && source .env && set +a
 python manage.py migrate
 ```
 
 `pip install` y `migrate` no rompen nada si no había nada nuevo que instalar/migrar — correrlos siempre es más simple que acordarse de cuándo hace falta. `git pull` (sin especificar rama) funciona porque este clon ya está configurado para seguir `origin/backend-deploy` por defecto.
+
+**`set -a && source .env && set +a` es obligatorio antes de `migrate` (o cualquier `manage.py` manual) en una consola Bash nueva del panel** — a diferencia del proceso web real (que si lee `.env`/las variables configuradas al recargar), una consola Bash abierta a mano no carga nada de eso sola, así que sin este paso `manage.py` falla con `RuntimeError: The DJANGO_SECRET_KEY environment variable is not set`. `set -a` exporta automáticamente todo lo que `source .env` defina, en vez de dejarlo como variable local del shell.
 
 Y por último, recargar la app — con un plan de pago hay dos formas:
 
